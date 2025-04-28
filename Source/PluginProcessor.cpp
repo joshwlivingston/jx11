@@ -20,7 +20,7 @@ JX11AudioProcessor::JX11AudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        )
-#endif
+#endif // these if blocks correspond to settings in Projucer
 {
 }
 
