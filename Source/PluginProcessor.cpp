@@ -129,7 +129,9 @@ bool JX11AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 }
 #endif
 
-void JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void JX11AudioProcessor::processBlock (
+    juce::AudioBuffer<float>& buffer, // Where to place outgoing MIDI messages
+    juce::MidiBuffer& midiMessages)   // Contains incoming MIDI messages
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
