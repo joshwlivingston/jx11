@@ -11,16 +11,17 @@
 
 //==============================================================================
 JX11AudioProcessor::JX11AudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
-#endif // these if blocks correspond to settings in Projucer
+  #ifndef JucePlugin_PreferredChannelConfigurations
+    : AudioProcessor(BusesProperties()
+      #if !JucePlugin_IsMidiEffect
+        #if !JucePlugin_IsSynth
+          .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+        #endif
+          // creates a BusesProperties() object with stereo output bus named
+          // "Output"
+          .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+      #endif)
+  #endif // if blocks correspond to settings in Projucer
 {
 }
 
@@ -91,6 +92,19 @@ void JX11AudioProcessor::changeProgramName (int index, const juce::String& newNa
 }
 
 //==============================================================================
+
+// prepareToPlay() is called before the host start using the plugin; it
+// communicates the current sample rate and the maximum block size to expect.
+//
+// DAW's will update block sizes according to any automation existing in the
+// project. FL Studio, for example, occaisonally calls processBlock() with a
+// block size of 1, which is not ideal.
+//
+// DAW's will update block sizes according to any automation existing in the
+// project. Parameter changes are usually handled at the beginning of the block,
+// so shorter block sizes helps ensure meeting the deadline, even when
+// automation is present. Developers need to be aware of the DAW's chosen block
+// size.
 void JX11AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
@@ -109,55 +123,67 @@ bool JX11AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
     return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
-        return false;
-
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
-
-    return true;
   #endif
+  // Communicates to the host that the plug-in supports both mono and stereo
+  // To support stereo only, remove the inequality for mono()
+  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() &&
+      layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+    return false;
+
+  // This checks if the input layout matches the output layout
+  #if !JucePlugin_IsSynth
+    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+      return false;
+  #endif
+
+  return true;
 }
 #endif
 
+// Audio callback method. Called once per block. A typical block contains 128
+// samples. 
+//
+// A larger block size means less overhead is introduced via repeated calls to
+// processBlock().
+//
+// A smaller block size decreases the latency - the delay between asking for a
+// block and receiving it.
+//
+// Choosing the smallest allowed buffer size, to minimize latency, seems like a
+// logical choice; however, smaller size requires faster processing time -
+// something limited by the computer, plugin, hardware, driver, etc. So, you
+// have to ensure that the buffer size chosen is able to be processed in that
+// implied latency time, a timing known as the "deadline."
+//
+// To help meet the deadline, the processBlock() method runs on a high priority
+// thread, known as the audio thread. Many blocking operations, such as memory
+// allocation and system calls are forbidden on the audio thread. Additionally,
+// audio programming uses concepts such as atomic variables and lock-free
+// circular buffers, features not common in regular programming.
+//
+// Latency is unavoidable in digital audio; ideally, the latency is so low that
+// it is unnoticeable.
+//
+// Most DAW's allow the user to set the buffer size; "buffer" size is often used
+// interchangably with "block" size. In Logic Pro, for example, the buffer size
+// setting displays the resulting the latency based on the chosen buffer size.
 void JX11AudioProcessor::processBlock (
-    juce::AudioBuffer<float>& buffer, // Where to place outgoing MIDI messages
-    juce::MidiBuffer& midiMessages)   // Contains incoming MIDI messages
+  juce::AudioBuffer<float>& buffer, // Where to place outgoing MIDI messages
+  juce::MidiBuffer& midiMessages)   // Contains incoming MIDI messages
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+  // Sets a CPU flag that automatically truncates small floats to 0, instead of
+  // converting them to denormals, which are much slower than regular floats
+  juce::ScopedNoDenormals noDenormals;
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+  const auto totalNumInputChannels  = getTotalNumInputChannels();
+  const auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
-    }
+  // JX11 does not have an audio input channel, and JUCE does not guarantee that
+  // the AudioBuffer channel will be empty. So, it's good defensive practice to
+  // ensure the incoming audio buffer contains only silence.
+  for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
+    buffer.clear(i, 0, buffer.getNumSamples());
+  }
 }
 
 //==============================================================================
