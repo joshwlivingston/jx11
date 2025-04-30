@@ -184,6 +184,24 @@ void JX11AudioProcessor::processBlock (
   for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
     buffer.clear(i, 0, buffer.getNumSamples());
   }
+
+  // To look at the incoming MIDI messages, iterate through the buffer
+  // In the `for` range, type MidiBufferIterator returns MidiMessageMetadata
+  // https://docs.juce.com/master/classMidiBufferIterator.html
+  for (const auto metadata : midiMessages) {
+    if (metadata.numBytes == 3) {
+      // 1 status byte (metadata[0])
+      // 2 data bytes (metadata[1] and metadata[2])
+      // 
+      // also includes timestamp at metadata.samplePosition: the number of
+      // samples relative to the start of audio buffer
+    }
+  }
+
+  // generate output audio for playing the notes
+  for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+    // output audio...
+  }
 }
 
 //==============================================================================
