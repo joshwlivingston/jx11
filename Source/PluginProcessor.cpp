@@ -195,6 +195,16 @@ void JX11AudioProcessor::processBlock (
       // 
       // also includes timestamp at metadata.samplePosition: the number of
       // samples relative to the start of audio buffer
+      //
+      // The timestamp indicates when the command should occur; since a block
+      // can space mutliple note on/ note odd cycles, for example, you need the
+      // timestamp to issue the MIDI command at the correct time
+      //
+      // The first-pass strategy is to loop through the MIDI instructions and
+      // issue them; however, that would lead to all instructions being issued
+      // at the beginning of the block.
+      //
+      // JX11 splits the Audtio buffer into smaller pieces to deal with each command
     }
   }
 
@@ -202,6 +212,32 @@ void JX11AudioProcessor::processBlock (
   for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
     // output audio...
   }
+}
+
+void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer,
+                                             juce::MidiBudder& midiMessages)
+{
+  int bufferOffest = 0;
+  for (const auto metadata : midiMessages) {
+    const int samplesThisSegment = metadata.samplePosition - bufferOffset;
+    if (samplesThisSegment > 0) {
+      render(buffer, samplesThisSegment, bufferOffset);
+      bufferOffset += samplesThisSegment;
+    }
+
+    if (metadata.numBytes <= 3) {
+      uint8_t data1 = metadata.numBytes >= 2 ? metadata.data[1] : 0;
+      uint8_t data2 = metadata.numBytes == 3 ? metadata.data[2] : 0;
+      handleMIDI(metadata.data[0], data1, data2);
+    }
+  }
+
+  int samplesLastSegment = buffer.getNumSamples() - bufferOffest;
+  if (samplesLastSegment > 0) {
+    render(buffer, samplesLastSegment, bufferOffest);
+  }
+
+  midiMessages.clear();
 }
 
 //==============================================================================
