@@ -95,16 +95,6 @@ void JX11AudioProcessor::changeProgramName (int index, const juce::String& newNa
 
 // prepareToPlay() is called before the host start using the plugin; it
 // communicates the current sample rate and the maximum block size to expect.
-//
-// DAW's will update block sizes according to any automation existing in the
-// project. FL Studio, for example, occaisonally calls processBlock() with a
-// block size of 1, which is not ideal.
-//
-// DAW's will update block sizes according to any automation existing in the
-// project. Parameter changes are usually handled at the beginning of the block,
-// so shorter block sizes helps ensure meeting the deadline, even when
-// automation is present. Developers need to be aware of the DAW's chosen block
-// size.
 void JX11AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
@@ -140,33 +130,7 @@ bool JX11AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 }
 #endif
 
-// Audio callback method. Called once per block. A typical block contains 128
-// samples. 
-//
-// A larger block size means less overhead is introduced via repeated calls to
-// processBlock().
-//
-// A smaller block size decreases the latency - the delay between asking for a
-// block and receiving it.
-//
-// Choosing the smallest allowed buffer size, to minimize latency, seems like a
-// logical choice; however, smaller size requires faster processing time -
-// something limited by the computer, plugin, hardware, driver, etc. So, you
-// have to ensure that the buffer size chosen is able to be processed in that
-// implied latency time, a timing known as the "deadline."
-//
-// To help meet the deadline, the processBlock() method runs on a high priority
-// thread, known as the audio thread. Many blocking operations, such as memory
-// allocation and system calls are forbidden on the audio thread. Additionally,
-// audio programming uses concepts such as atomic variables and lock-free
-// circular buffers, features not common in regular programming.
-//
-// Latency is unavoidable in digital audio; ideally, the latency is so low that
-// it is unnoticeable.
-//
-// Most DAW's allow the user to set the buffer size; "buffer" size is often used
-// interchangably with "block" size. In Logic Pro, for example, the buffer size
-// setting displays the resulting the latency based on the chosen buffer size.
+// Audio callback method. Called once per block.
 void JX11AudioProcessor::processBlock (
   juce::AudioBuffer<float>& buffer, // Where to place outgoing MIDI messages
   juce::MidiBuffer& midiMessages)   // Contains incoming MIDI messages
@@ -184,36 +148,10 @@ void JX11AudioProcessor::processBlock (
   for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
     buffer.clear(i, 0, buffer.getNumSamples());
   }
-
-  // To look at the incoming MIDI messages, iterate through the buffer
-  // In the `for` range, type MidiBufferIterator returns MidiMessageMetadata
-  // https://docs.juce.com/master/classMidiBufferIterator.html
-  for (const auto metadata : midiMessages) {
-    if (metadata.numBytes == 3) {
-      // 1 status byte (metadata[0])
-      // 2 data bytes (metadata[1] and metadata[2])
-      // 
-      // also includes timestamp at metadata.samplePosition: the number of
-      // samples relative to the start of audio buffer
-      //
-      // The timestamp indicates when the command should occur; since a block
-      // can space mutliple note on/ note odd cycles, for example, you need the
-      // timestamp to issue the MIDI command at the correct time
-      //
-      // The first-pass strategy is to loop through the MIDI instructions and
-      // issue them; however, that would lead to all instructions being issued
-      // at the beginning of the block.
-      //
-      // JX11 splits the Audtio buffer into smaller pieces to deal with each command
-    }
-  }
-
-  // generate output audio for playing the notes
-  for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-    // output audio...
-  }
 }
 
+// Split Audio Buffer into smaller buffers based on MIDI event timings. Allows
+// for MIDI events to be called at the beginning of blocks.
 void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer,
                                              juce::MidiBudder& midiMessages)
 {
