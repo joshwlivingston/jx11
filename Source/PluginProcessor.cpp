@@ -148,34 +148,54 @@ void JX11AudioProcessor::processBlock (
   for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
     buffer.clear(i, 0, buffer.getNumSamples());
   }
+
+  splitBufferByEvents(buffer, midiMessages);
 }
 
 // Split Audio Buffer into smaller buffers based on MIDI event timings. Allows
-// for MIDI events to be called at the beginning of blocks.
+// for MIDI events to be called at the beginning of all blocks.
 void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer,
                                              juce::MidiBudder& midiMessages)
 {
   int bufferOffest = 0;
   for (const auto metadata : midiMessages) {
+    // Render audio before this event
     const int samplesThisSegment = metadata.samplePosition - bufferOffset;
     if (samplesThisSegment > 0) {
       render(buffer, samplesThisSegment, bufferOffset);
       bufferOffset += samplesThisSegment;
     }
 
+    // Handle this event
     if (metadata.numBytes <= 3) {
-      uint8_t data1 = metadata.numBytes >= 2 ? metadata.data[1] : 0;
-      uint8_t data2 = metadata.numBytes == 3 ? metadata.data[2] : 0;
+      const uint8_t data1 = metadata.numBytes >= 2 ? metadata.data[1] : 0;
+      const uint8_t data2 = metadata.numBytes == 3 ? metadata.data[2] : 0;
       handleMIDI(metadata.data[0], data1, data2);
     }
   }
 
+  // Render all audio after the last MIDI event
   int samplesLastSegment = buffer.getNumSamples() - bufferOffest;
   if (samplesLastSegment > 0) {
     render(buffer, samplesLastSegment, bufferOffest);
   }
 
   midiMessages.clear();
+}
+
+void JX11AudioProcessor::handleMIDI(uint8_t status, 
+                                    uint8_t data0, uint8_t data1)
+{
+  // print MIDI commands to debug console
+  char s[16];
+  snprintf(s, 16, "%02hhX %02hhX %02hhX", status, data1, data2);
+  DBG(s); // JUCE's debug macros
+}
+
+void JX11AudioProcessor::render(juce::AudioBuffer<float>& buffer,
+                                int sampleCount, int bufferOffset)
+{
+  // TODO: implement render()
 }
 
 //==============================================================================
