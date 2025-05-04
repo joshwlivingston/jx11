@@ -20,7 +20,8 @@ JX11AudioProcessor::JX11AudioProcessor()
           // creates a BusesProperties() object with stereo output bus named
           // "Output"
           .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-      #endif)
+      #endif
+    )
   #endif // if blocks correspond to settings in Projucer
 {
 }
@@ -155,9 +156,9 @@ void JX11AudioProcessor::processBlock (
 // Split Audio Buffer into smaller buffers based on MIDI event timings. Allows
 // for MIDI events to be called at the beginning of all blocks.
 void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer,
-                                             juce::MidiBudder& midiMessages)
+                                             juce::MidiBuffer& midiMessages)
 {
-  int bufferOffest = 0;
+  int bufferOffset = 0;
   for (const auto metadata : midiMessages) {
     // Render audio before this event
     const int samplesThisSegment = metadata.samplePosition - bufferOffset;
@@ -175,9 +176,9 @@ void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer,
   }
 
   // Render all audio after the last MIDI event
-  int samplesLastSegment = buffer.getNumSamples() - bufferOffest;
+  int samplesLastSegment = buffer.getNumSamples() - bufferOffset;
   if (samplesLastSegment > 0) {
-    render(buffer, samplesLastSegment, bufferOffest);
+    render(buffer, samplesLastSegment, bufferOffset);
   }
 
   midiMessages.clear();
@@ -188,7 +189,7 @@ void JX11AudioProcessor::handleMIDI(uint8_t status,
 {
   // print MIDI commands to debug console
   char s[16];
-  snprintf(s, 16, "%02hhX %02hhX %02hhX", status, data1, data2);
+  snprintf(s, 16, "%02hhX %02hhX %02hhX", status, data0, data1);
   DBG(s); // JUCE's debug macros
 }
 
