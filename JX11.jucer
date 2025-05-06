@@ -5,13 +5,19 @@
               pluginManufacturer="Pug Synthesis" pluginManufacturerCode="PUGS">
   <MAINGROUP id="gWDY5d" name="JX11">
     <GROUP id="{B89CA08F-4F9D-A443-231A-9730A30AF7E2}" name="Source">
-      <FILE id="DvNNUY" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/PluginProcessor.cpp"/>
-      <FILE id="dTrTnp" name="PluginProcessor.h" compile="0" resource="0"
-            file="Source/PluginProcessor.h"/>
-      <FILE id="FFHJLn" name="PluginEditor.cpp" compile="1" resource="0"
+      <FILE id="FYeZ9M" name="NoiseGenerator.h" compile="0" resource="0"
+            file="Source/NoiseGenerator.h"/>
+      <FILE id="IFoEuY" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
-      <FILE id="HkpdIc" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="WLnDTx" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="kHwdyB" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="qUMk1q" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="DE6WJn" name="Synth.cpp" compile="1" resource="0" file="Source/Synth.cpp"/>
+      <FILE id="kcEBrh" name="Synth.h" compile="0" resource="0" file="Source/Synth.h"/>
+      <FILE id="m9lNeA" name="Utils.h" compile="0" resource="0" file="Source/Utils.h"/>
+      <FILE id="RODsUh" name="Voice.h" compile="0" resource="0" file="Source/Voice.h"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>

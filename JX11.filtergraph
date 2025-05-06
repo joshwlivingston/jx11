@@ -65,7 +65,7 @@
           uiLastY_Normal="82" uiopen_Normal="0">
     <PLUGIN name="JX11" format="VST3" category="Instrument|Synth" manufacturer="Pug Synthesis"
             version="1.0.0" file="C:\Program Files\Common Files\VST3\JX11.vst3\Contents\x86_64-win\JX11.vst3"
-            uniqueId="57351b07" isInstrument="1" fileTime="1967967a624" infoUpdateTime="1967997d083"
+            uniqueId="57351b07" isInstrument="1" fileTime="1967967a624" infoUpdateTime="196a20ef475"
             numInputs="0" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="61c46130"/>
     <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
@@ -79,7 +79,7 @@
   <FILTER uid="6" x="0.5125" y="0.655241935483871" useARA="0">
     <PLUGIN name="SPAN" format="VST3" category="Fx|Analyzer" manufacturer="Voxengo"
             version="3.23" file="C:\Program Files\Common Files\VST3\SPAN.vst3"
-            uniqueId="65d3dbf7" isInstrument="0" fileTime="1959f271ec0" infoUpdateTime="1967997d083"
+            uniqueId="65d3dbf7" isInstrument="0" fileTime="1959f271ec0" infoUpdateTime="196a20ef476"
             numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="c2a3d69d"/>
     <STATE>1549.VMjLgPfA...O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9DCL2biKmETahkWVhYjKt3xLtHVLtLCMUcGVvLWZhM0PEkib4EyXgolRHM2XUsjVAo0a1HUQvoWY2.UQxImYtcESAkjRUYlVKU0b3TDR1vDYrcmVSg1P2kULqMmXCgzcEgDYtX1Rv4RMBciP1ElK2XjYDIycS4xUwbTPNQlT2vzcIcGYRQGRCEEdIcTY2Hyc4bCMk4TLNUmKtXGcGgmL1LTNHUCT0kTNIUWPrsRQ2oWNGcDMIQDQZ4lL4jidgclRjUESzzTVtjlLMY1SyPFYxYGcZAkUAsjUrYlb0oTVzj1PrYTQ40FQI4VN1bFd0Q0avIUUvMmVQUSUxAUTncEVkoTR5sjYjcjaJUmTCgFbNAmRqUWSzYlbzQiZHUGV04RTxjSZ3HzPukiZuQVQQYGNzTlRVkCLJICUVImcFMkS0YUbqoUZ5EVQqLjU1s1b5wDMlYkZM4DMpc0QS8TM2ISNmISN4UiZukUULM1Q3EVcvYULxPCUZkkLi0zbxUmM0nUVxXidZkUYOczbxUWcJEVaLUEdvQ1bLcUTZ8lb2zzYRoGaE4TMKA0bgMzRlkGRzg1Xt4jYu0VaxL0JKMCbq.SVwHyUAgmMQIGTnokXho0U2.kb5ICQLYSVEc2UhgzaSc1MxzTcncDb3gzJjQGZ4DDdzPjZ48TPvrRMwfiYLoFa1LlRvrDU1bDN2EmKAozcnUzRZciTmEWNocELqDUYmMDdhUDNqHkc4HTahAUXoQlRYQkazzDaXwzJHgVa0UmVwb1LSYGZ0oDVwXiRYAUTkQURKUVLtLUPtgiZog0YCAkMDIWaPsBVTISbUAWPJgFbXMWLQU0ZOMiMhMUb0TWL3r1Zv3TY1kFY1cDYqPWZYMjap4hVB0jUPYGVvkjPY4hLwQEcYwTPxXzRNUFcwDzQWwlVFkDMyfTMO4RUMIkUIo2Mv71Ptc0JyclX4jiQQQzbOcVQDcWZSgDN2YGN28zXEEFNMslYWomLWMjR4PkXw3lRvAiQzk2cZojTWUEVUsVUGImRiASP1XTStXCMZ4RLyokKwrjbPIGdU4lVCYzTBcDTogCNN4zXKYSYDAmVEAWQCYUL4gSLFoGNqn1LIEDb1cDY4HWTmIiX1kyJBg1aKgUZDUUVvfGaIYiKVgkTXIzP3rzS2UGZlQ1RtECUQkUL3w1RWIjb1s1PGslcB4ValAERPMWVRAWTrQyc4YCLFgGd4gEV3sVLxzlLqX1a1T1MggDbgIDLqoTdykGSgECdy0jZy0DbLYVRpIiUukUZJkkQyIWaikTcTgVRWoER4IyJsYFbzQEZMsjUwjWbwDjb1YFV0z1TFkmQMQWVwASaYwVTzcybqLWXggTcMImKzMSdOAWVQYVUVkEYTk0UxDCTwDiaBA2S3vVdWo0ZrwDbLkGSEckZIcDTqn0a3YSPrgyUFUCUVACbqU0XvgGbVEmbvAyRwUidqUEMTYUUjUVSqTzZqUVUMMGb3fmLHoDcI8zcy8lSDkicmIjV3kGTDIiKvEVaXAWSJ8jPls1TTYTXQsDMGozS3MkdIA0TnYEaYoVVjcSc3n0PYElMmUjME4DZN0DbQkWLCEFciU0crsRMgkCYRU2R4bDNZMDMiYERgYmKG0zR3QCS4AGZKEFYrsxMxL1JvMmMvXDdwLCZlEyS3rxQwvDcLkGS4kGdZcTVgEmUP0lTjMmdSYFaxoUR4gTd2X2cy0jZ0gDVmcTN2fTMOklKz4DUgYERMcGSGEidy0jZy4TcJYVdSYTdBcDL1QSUJkmUwjWbxMlUOQyMow1XVU2JOkiMHESLMwDNsAENL4VR1XDaZkVVVQUczPSSUkib1IlUlQ1PqQTT33DT4bUQpszMwEycsEzR0UGaWYEYRMSdlUWZn81L4XyTOwldicldk0lZj0DaCYFd4.mTUIFQrsRZwc1RrYDOujzPu0Fbu4VYtQmO77hUSQ0LPwVcmklaSQWXzUlO..</STATE>
@@ -95,7 +95,7 @@
   <FILTER uid="7" x="0.2325" y="0.6391129032258065" useARA="0">
     <PLUGIN name="s(M)exoscope" format="VST3" category="Fx" manufacturer="Smartelectronix"
             version="1.1.0" file="C:\Program Files\smexoscope\Windows\s(M)exoscope.vst3"
-            uniqueId="933d9a01" isInstrument="0" fileTime="196799327b7" infoUpdateTime="1967997d084"
+            uniqueId="933d9a01" isInstrument="0" fileTime="196799327b7" infoUpdateTime="196a20ef476"
             numInputs="0" numOutputs="0" isShell="0" hasARAExtension="0"
             uid="3a42e06a"/>
     <STATE>480.VMjLgbc....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9HyM13hUMczXWEjKt3hYt3hKt.kKt3hKt3BS5gEcyQjKt3hKqXTR5AkaA4hKtfjKTAWVrokKDAkKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt.kQt3hK18jKt3hKt3hKt3xMC4hKtX2St3hKPshKt3hK2LjKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKlIUUMQUTPkzUZESQFM1ZQQEV5UjQtDDQlAEMAcEV40zQtDDQ14hK5EjKt3hKt3hKt3hRUACTEEzZh8VVWgkdUYTTmE0UXwyKIMzasA2atUlaz4COuX0TTMCTrU2Yo41TzEFck4C.</STATE>

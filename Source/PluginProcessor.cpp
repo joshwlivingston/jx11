@@ -98,14 +98,18 @@ void JX11AudioProcessor::changeProgramName (int index, const juce::String& newNa
 // communicates the current sample rate and the maximum block size to expect.
 void JX11AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+  synth.allocateResources(sampleRate, samplesPerBlock);
+  reset();
 }
 
 void JX11AudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+  synth.deallocateResources();
+}
+
+void JX11AudioProcessor::reset()
+{
+  synth.reset();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -187,16 +191,18 @@ void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer,
 void JX11AudioProcessor::handleMIDI(uint8_t status, 
                                     uint8_t data0, uint8_t data1)
 {
-  // print MIDI commands to debug console
-  char s[16];
-  snprintf(s, 16, "%02hhX %02hhX %02hhX", status, data0, data1);
-  DBG(s); // JUCE's debug macros
+    synth.midiMessage(status, data0, data1);
 }
 
 void JX11AudioProcessor::render(juce::AudioBuffer<float>& buffer,
                                 int sampleCount, int bufferOffset)
 {
-  // TODO: implement render()
+    float* outputBuffers[2] = { nullptr, nullptr };
+    outputBuffers[0] = buffer.getWritePointer(0) + bufferOffset;
+    if (getTotalNumOutputChannels() > 1) {
+        outputBuffers[1] = buffer.getWritePointer(1) + bufferOffset;
+    }
+    synth.render(outputBuffers, sampleCount);
 }
 
 //==============================================================================

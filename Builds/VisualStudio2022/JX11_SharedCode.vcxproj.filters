@@ -670,10 +670,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\PluginEditor.cpp">
+      <Filter>JX11\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\PluginProcessor.cpp">
       <Filter>JX11\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\PluginEditor.cpp">
+    <ClCompile Include="..\..\Source\Synth.cpp">
       <Filter>JX11\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Users\Josh Livingston\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.cpp">
@@ -3531,10 +3534,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\PluginProcessor.h">
+    <ClInclude Include="..\..\Source\NoiseGenerator.h">
       <Filter>JX11\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\PluginEditor.h">
+      <Filter>JX11\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\PluginProcessor.h">
+      <Filter>JX11\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Synth.h">
+      <Filter>JX11\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Utils.h">
+      <Filter>JX11\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Voice.h">
       <Filter>JX11\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\Users\Josh Livingston\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">
