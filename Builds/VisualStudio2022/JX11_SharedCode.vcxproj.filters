@@ -3537,6 +3537,9 @@
     <ClInclude Include="..\..\Source\NoiseGenerator.h">
       <Filter>JX11\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Oscillator.h">
+      <Filter>JX11\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\PluginEditor.h">
       <Filter>JX11\Source</Filter>
     </ClInclude>

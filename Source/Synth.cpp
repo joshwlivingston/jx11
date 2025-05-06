@@ -46,9 +46,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
     // If key is pressed, calculate the new sample value
     float output = 0.0f;
     if (voice.note > 0) {
-      // noise value is multipled by the normalized velocity
-      // cut in half for realistic gain
-        output = noise * (voice.velocity / 127.0f) * 0.5f;
+        output = voice.render();
     }
 
     // Write the output value into audio buffer(s)
@@ -88,13 +86,17 @@ void Synth::midiMessage(uint8_t status, uint8_t data0, uint8_t data1)
 void Synth::noteOn(int note, int velocity)
 {
   voice.note = note;
-  voice.velocity = velocity;
+  const float frequency = 440.0f * std::exp2(float(note - 69) / 12.0f);
+
+  voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
+  voice.osc.inc = frequency / sampleRate;
+  voice.osc.reset();
 }
 
 void Synth::noteOff(int note)
 {
   if (voice.note == note) {
     voice.note = 0;
-    voice.velocity = 0;
+    voice.osc.reset();
   }
 }

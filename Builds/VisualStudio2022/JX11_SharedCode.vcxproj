@@ -2835,6 +2835,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\NoiseGenerator.h"/>
+    <ClInclude Include="..\..\Source\Oscillator.h"/>
     <ClInclude Include="..\..\Source\PluginEditor.h"/>
     <ClInclude Include="..\..\Source\PluginProcessor.h"/>
     <ClInclude Include="..\..\Source\Synth.h"/>
