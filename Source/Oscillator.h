@@ -14,18 +14,16 @@
 class Oscillator {
 public:
   void reset() { 
-    phase = 0;
-    sin0 = amplitude * std::sin(phase * TWO_PI);
-    sin1 = amplitude * std::sin((phase - inc) * TWO_PI);
-    dsin = 2.0f * std::cos(inc * TWO_PI);
+    phase = 0.0f;
   }
 
   float nextSample()
   {
-    float sinx = dsin * sin0 - sin1;
-    sin1 = sin0;
-    sin0 = sinx;
-    return sinx;
+    phase += inc;
+    if (phase >= 1.0f) {
+      phase -= 1.0f;
+    }
+    return amplitude * (2.0f * phase - 1.0f);
   }
 
   float amplitude;
