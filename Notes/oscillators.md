@@ -35,8 +35,30 @@ the sample in the wave. In JUCE, since the samples are between -1 and 1, we take
 
 The naive sawtooth produces **aliases**, which are inharmonics resulting from the
 sine waves used to create sharp corners like those found in the naive sawtooth.
-Many of those sine waves contain frequences above the Nyquist limit; those
+Many of those sine waves contain frequencies above the Nyquist limit; those
 frequencies are mirrored to inharmonic lower frequencies - the aliases.
 
 To prevent aliases, you can create a **bandlimited sawtooth**, which is a
-sawtooth comprised of "wobbly" edges.
+sawtooth comprised of "wobbly" edges. "Bandlimited" refers to the feature of
+these waves, that no sample frequency will exceed the sample's Nyquist limit.
+These bands are achieved through applying the following equation:
+
+```
+(2 / pi) * (sin(phi) - sin(2 * phi) / 2 - sin(3 * phi) / 3 - ...)
+```
+
+In this case, `phi` represents the fundamental frequency. The second harmonic
+therefore has frequency `2 * phi`; the third, `3 * phi`, and so on. `2 / pi` is
+a scaling factor used to keep the values between -1 and 1.
+
+This particular equation demonstrates a form of **additive synthesis**, a
+technique in which sounds are created through _adding_ sine waves together.
+While this technique is slow in practice, it is helpful for illustrative
+purposes.
+
+### Bandlimited Impulse Trains (BLIT)
+
+An older way of making efficient sawtooth oscillators uses a technique known
+as impulse trains. **Bandlimited impulse trains** are an older technique, and,
+while more modern and better techniques now exist, _impulse trains_ are a core
+concept in DSP.

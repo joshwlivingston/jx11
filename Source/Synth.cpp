@@ -12,41 +12,34 @@
 
 #include "Utils.h"
 
-Synth::Synth()
-{
-  sampleRate = 44100.0f;
-}
+Synth::Synth() { sampleRate = 44100.0f; }
 
-void Synth::allocateResources(double sampleRate_, int /*samplePerBlock*/ )
-{
+void Synth::allocateResources(double sampleRate_, int /*samplePerBlock*/) {
   sampleRate = static_cast<float>(sampleRate_);
 }
 
-void Synth::deallocateResources()
-{
+void Synth::deallocateResources() {
   // do nothing
 }
 
-void Synth::reset()
-{
-    voice.reset();
-    noiseGen.reset();
+void Synth::reset() {
+  voice.reset();
+  noiseGen.reset();
 }
 
-void Synth::render(float** outputBuffers, int sampleCount)
-{
-  float* outputBufferLeft = outputBuffers[0];
-  float* outputBufferRight = outputBuffers[1];
+void Synth::render(float **outputBuffers, int sampleCount) {
+  float *outputBufferLeft = outputBuffers[0];
+  float *outputBufferRight = outputBuffers[1];
 
   // loop through samples in buffer one by one
   for (int sample = 0; sample < sampleCount; ++sample) {
     // get next output from noise generator
-    float noise  = noiseGen.nextValue();
+    float noise = noiseGen.nextValue();
 
     // If key is pressed, calculate the new sample value
     float output = 0.0f;
     if (voice.note > 0) {
-        output = voice.render();
+      output = voice.render();
     }
 
     // Write the output value into audio buffer(s)
@@ -60,41 +53,40 @@ void Synth::render(float** outputBuffers, int sampleCount)
   protectYourEars(outputBufferRight, sampleCount);
 }
 
-void Synth::midiMessage(uint8_t status, uint8_t data0, uint8_t data1)
-{
+void Synth::midiMessage(uint8_t status, uint8_t data0, uint8_t data1) {
   switch (status & 0xF0) {
-    // Note Off
-    case 0x80: {
-        noteOff(data0 & 0x7F);
-        break;
-    }
+  // Note Off
+  case 0x80: {
+    noteOff(data0 & 0x7F);
+    break;
+  }
 
-    // Note On
-    case 0x90: {
-      uint8_t note = data0 & 0x7f;
-      uint8_t velo = data1 & 0x7f;
-      if (velo > 0) {
-        noteOn(note, velo);
-      } else {
-        noteOff(note);
-      }
-      break;
+  // Note On
+  case 0x90: {
+    uint8_t note = data0 & 0x7f;
+    uint8_t velo = data1 & 0x7f;
+    if (velo > 0) {
+      noteOn(note, velo);
+    } else {
+      noteOff(note);
     }
+    break;
+  }
   }
 }
 
-void Synth::noteOn(int note, int velocity)
-{
+void Synth::noteOn(int note, int velocity) {
   voice.note = note;
   const float frequency = 440.0f * std::exp2(float(note - 69) / 12.0f);
 
   voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
   voice.osc.inc = frequency / sampleRate;
+  voice.osc.freq = frequency;
+  voice.osc.sampleRate = sampleRate;
   voice.osc.reset();
 }
 
-void Synth::noteOff(int note)
-{
+void Synth::noteOff(int note) {
   if (voice.note == note) {
     voice.note = 0;
     voice.osc.reset();
