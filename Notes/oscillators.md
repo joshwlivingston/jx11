@@ -61,4 +61,21 @@ purposes.
 An older way of making efficient sawtooth oscillators uses a technique known
 as impulse trains. **Bandlimited impulse trains** are an older technique, and,
 while more modern and better techniques now exist, _impulse trains_ are a core
-concept in DSP.
+concept in DSP. Plus, BLIT's were used in the MDA JX10, so they were chosen for
+the JX11.
+
+The **impulse value** is the simplest digital signal imaginable. It is zero for
+one sample and the maximum frequency for the remaining samples. The
+**impulse train** consists of impulse values, where the distance between the
+maximum frequency samples corresponds to the sound's pitch.
+
+The proper way to build the impulse train is to use the **sinc** function,
+`sin(pi * x) / (pi * x)`. To build this function, you would have to build the
+sinc function for each peak, an infinite \* n process. Instead, what we do is
+calculate the since function for one peak, take the peak to the midpoint for
+that function, and mirror it to achieve the "peak-to-peak" train.
+
+This approximation differs from the true result in that the sinc functions in
+the true output are supposed to clash with each other. Additionally, this
+method produces some aliases, but these aliases are usually near the Nyquist
+limit, i.e., out of hearing range.

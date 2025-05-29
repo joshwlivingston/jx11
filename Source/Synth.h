@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    NoiseGenerator.h
+    Synth.h
     Created: 5 May 2025 5:13:05pm
     Author:  Josh Livingston
 

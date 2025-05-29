@@ -13,15 +13,19 @@
 #include "Oscillator.h"
 
 // The role of Voice is to produce the next output sample for a given note
-struct Voice
-{
+struct Voice {
   int note;
+  float saw;
   Oscillator osc;
 
-  void reset()
-  { 
-      note = 0;
-      osc.reset(); 
+  void reset() {
+    note = 0;
+    saw = 0;
+    osc.reset();
   }
-  float render() { return osc.nextSample(); }
+  float render() {
+    float sample = osc.nextSample();
+    saw = saw * 0.997f + sample;
+    return saw;
+  }
 };
