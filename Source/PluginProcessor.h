@@ -30,6 +30,7 @@
 #include <JuceHeader.h>
 
 #include "Synth.h"
+#include "juce_audio_processors/juce_audio_processors.h"
 
 namespace ParameterID {
 #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
@@ -108,6 +109,9 @@ public:
   void getStateInformation(juce::MemoryBlock &destData) override;
   void setStateInformation(const void *data, int sizeInBytes) override;
 
+  juce::AudioProcessorValueTreeState apvts{*this, nullptr, "Parameters",
+                                           createParameterLayout()};
+
 private:
   //==========================================================================
   // disables copy constructor for the class and enable JUCE's memory leak
@@ -119,6 +123,8 @@ private:
   void handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2);
   void render(juce::AudioBuffer<float> &buffer, int sampleCount,
               int bufferOffset);
+
+  juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
   Synth synth;
 
