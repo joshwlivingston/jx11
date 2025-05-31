@@ -186,7 +186,9 @@ bool JX11AudioProcessor::hasEditor() const {
 }
 
 juce::AudioProcessorEditor *JX11AudioProcessor::createEditor() {
-  return new JX11AudioProcessorEditor(*this);
+  auto editor = new juce::GenericAudioProcessorEditor(*this);
+  editor->setSize(500, 1050);
+  return editor;
 }
 
 //==============================================================================
@@ -218,6 +220,85 @@ JX11AudioProcessor::createParameterLayout() {
       ParameterID::oscTune, "Osc Tune",
       juce::NormalisableRange<float>(-24.0f, 24.0f, 1.0f), -12.0f,
       juce::AudioParameterFloatAttributes().withLabel("semi")));
+
+  // Oscillator fine tuning
+  // Skews toward smaller steps in the middle of the range, and larger slider
+  // steps in the higher parts of the range
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::oscFine, "Osc Fine",
+      juce::NormalisableRange<float>(-50.0f, 50.0f, 0.1f, 0.3f, true), 0.0f,
+      juce::AudioParameterFloatAttributes().withLabel("cent")));
+
+  // Oscillator mix
+  auto oscMixStringFromValue = [](float value, int) {
+    char s[16] = {0};
+    snprintf(s, 16, "%4.0f:%2.0f", 100.0 - 0.5 * value, 0.5 * value);
+    return juce::String(s);
+  };
+
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::oscMix, "Osc Mix",
+      juce::NormalisableRange<float>(0.0f, 100.0f), 0.0f,
+      juce::AudioParameterFloatAttributes()
+          .withLabel("%")
+          .withStringFromValueFunction(oscMixStringFromValue)));
+
+  // Glide mode
+  parameters.add(std::make_unique<juce::AudioParameterChoice>(
+      ParameterID::glideMode, "Glide Mode",
+      juce::StringArray{"Off", "Legato", "Always"}, 0));
+
+  // Glide rate
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::glideRate, "Glide Rate",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 35.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Glide bend
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::glideBend, "Glide Bend",
+      juce::NormalisableRange<float>(-36.0f, 36.0f, 0.01f, 0.4f, true), 0.0f,
+      juce::AudioParameterFloatAttributes().withLabel("semi")));
+
+  // Filter frequency
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::filterFreq, "Filter Freq",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 0.1f), 100.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Filter resonance
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::filterReso, "Filter Reso",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 15.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Filter Envelope
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::filterEnv, "Filter Env",
+      juce::NormalisableRange<float>(-100.0f, 100.0f, 0.1f), 50.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Filter LFO
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::filterLFO, "Filter LFO",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 0.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Filter Velocity
+  auto filterVelocityStringFromValue = [](float value, int) {
+    if (value < -90.0f) {
+      return juce::String("OFF");
+    } else {
+      return juce::String(value);
+    }
+  };
+
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::filterVelocity, "Velocity",
+      juce::NormalisableRange<float>(-100.0f, 100.0f, 1.0f), 0.0f,
+      juce::AudioParameterFloatAttributes()
+          .withLabel("%")
+          .withStringFromValueFunction(filterVelocityStringFromValue)));
 
   // Mono/Poly
   parameters.add(std::make_unique<juce::AudioParameterChoice>(
