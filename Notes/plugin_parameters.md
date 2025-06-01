@@ -21,6 +21,41 @@ supports undo/redo functionality, and manages the nodes' lifetimes.
 
 The APTVS is added to the `PluginProcessor` class, in the public section.
 
+## Avoiding Race Conditions
+
+When the user interacts with a UI element, the APTVS will post a notification
+on the UI thread. However, when the notification originates from the host,
+the destination may be on the UI thread, some other thread, or the high
+priority audio thread, the thread that `processBlock` writes to.
+
+In a normal application, we could lock the APTVS to avoid race conditions;
+however, in this audio application, that is prohibited because we cannot
+block the high priority audio thread.
+
+In JUCE, the solution is idiomatic: `juce::AudioParameterFloat` (and all other
+`juce` parameter objects) store the parameter's value as an
+[atomic variable](https://en.cppreference.com/w/cpp/atomic/atomic.html),
+ensuring thread-safety.
+
+The author provides a succinct conceptualization of atomics: "_lightweight
+synchronization primitives_".
+
+In other words, atomics are strong abstractions that allow multiple threads to
+access a variable without wait patterns. Specifically, while using atomics, all
+reads can be performed without interruption, and all writes can be performed
+without anyone attempting a read.
+
+Accessing the parameter's value using will result in a thread-safe read.
+
+```cpp
+paramVal->get()
+```
+
+Atomic variables should _always_ be used in audio programming. If not using
+JUCE, you may have to create your own atomics. This is the case for Apple's
+AUv3. Additionally, atomics are absent from many SDK's code samples. For any
+real application, these samples would need to be modified to use atomics.
+
 ## Parameters in JX11
 
 JX11 has 26 parameters, available as private members of the
