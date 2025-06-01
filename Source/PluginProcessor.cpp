@@ -215,6 +215,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout
 JX11AudioProcessor::createParameterLayout() {
   juce::AudioProcessorValueTreeState::ParameterLayout parameters;
 
+  // Mono/Poly
+  parameters.add(std::make_unique<juce::AudioParameterChoice>(
+      ParameterID::polyMode, "Polyphony", juce::StringArray{"Mono", "Poly"},
+      1));
+
   // Oscillator tuning
   parameters.add(std::make_unique<juce::AudioParameterFloat>(
       ParameterID::oscTune, "Osc Tune",
@@ -300,10 +305,101 @@ JX11AudioProcessor::createParameterLayout() {
           .withLabel("%")
           .withStringFromValueFunction(filterVelocityStringFromValue)));
 
-  // Mono/Poly
-  parameters.add(std::make_unique<juce::AudioParameterChoice>(
-      ParameterID::polyMode, "Polyphony", juce::StringArray{"Mono", "Poly"},
-      1));
+  // Filter Attack
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::filterAttack, "Filter Attack",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 0.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Filter Decay
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::filterDecay, "Filter Decay",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 30.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Filter Sustain
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::filterSustain, "Filter Sustain",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 0.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Filter Release
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::filterRelease, "Filter Release",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 25.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Envelope Attack
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::envAttack, "Env Attack",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 0.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Envelope Decay
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::envDecay, "Env Decay",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 50.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Envelope Sustain
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::envSustain, "Env Sustain",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 100.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Envelope Release
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::envRelease, "Env Release",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 30.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // LFO Rate
+  auto lfoRateStringFromValue = [](float value, int) {
+    float lfoHz = std::exp(7.0f * value - 4.0f);
+    return juce::String(lfoHz, 3);
+  };
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::lfoRate, "LFO Rate", juce::NormalisableRange<float>(), 0.81f,
+      juce::AudioParameterFloatAttributes()
+          .withLabel("Hz")
+          .withStringFromValueFunction(lfoRateStringFromValue)));
+
+  // Vibrato
+  auto vibratoStringFromValue = [](float value, int) {
+    if (value < 0.0f)
+      return "PWM " + juce::String(-value, 1);
+    else
+      return juce::String(value, 1);
+  };
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::vibrato, "Vibrato",
+      juce::NormalisableRange<float>(-100.0f, 100.0f, 0.1f), 0.0f,
+      juce::AudioParameterFloatAttributes()
+          .withLabel("%")
+          .withStringFromValueFunction(vibratoStringFromValue)));
+
+  // Noise
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::noise, "Noise",
+      juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 0.0f,
+      juce::AudioParameterFloatAttributes().withLabel("%")));
+
+  // Octave
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::octave, "Octave",
+      juce::NormalisableRange<float>(-2.0f, 2.0f, 1.0f), 0.0f));
+
+  // Tuning
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::tuning, "Tuning",
+      juce::NormalisableRange<float>(-100.0f, 100.0f, 0.1f), 0.0f,
+      juce::AudioParameterFloatAttributes().withLabel("cent")));
+
+  // Output Level
+  parameters.add(std::make_unique<juce::AudioParameterFloat>(
+      ParameterID::outputLevel, "Output Level",
+      juce::NormalisableRange<float>(-24.0f, 6.0f, 0.1f), 0.0f,
+      juce::AudioParameterFloatAttributes().withLabel("dB")));
 
   return parameters;
 }
