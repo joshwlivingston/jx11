@@ -98,3 +98,54 @@ value is stored in the `filterVelocity` member variable. When the value is 0,
 it is set to display the string "OFF". When the velocity is off, all notes are
 equally loud. The range of the parameter is -100% to 100%. This velocity
 setting is for filter modulation velocity only, not overall velocity.
+
+### Envelope Parameters
+
+The envelope parameters, attack, decay, sustain, and release, are all
+continuous parameters. The values are defined similarly to the filter
+parameters. The values are stored in the `envAttack`, `envDecay`, `envSustain`,
+and `envRelease` member variables.
+
+### LFO
+
+The LFO, internally, uses a `NormalisableRange` with no arguments provided,
+defaulting to a range of [0, 1]. The value is displayed as a range of 0.018 Hz
+and 20.086 Hz. The mapping occurs in the lambda `lfoRateStringFromValue`:
+
+```cpp
+float lfoHz = std::exp(7.0f * value - 4.0f);
+```
+
+Other parameters used a skew to define the slider steps across the range of
+available values. In this instance, however, the skew is determined manually,
+through the calculation above.
+
+### Vibrato
+
+Vibrato indicates how much modulation should be applied. The parameter takes
+values from -100 to 100, and displayed a percentage from 0% to 100%. When the
+value is less than 0, the parameter will switch to Pitch Width Modulation (PWM)
+instead of vibrato. The value is stored in the `vibrato` member variable.
+
+### Noise
+
+The noise parameter is a continuous parameter, displayed as a percentage from
+0% to 100%. The value is stored in the `noise` member variable.
+
+### Octave
+
+Octave can be set to tune the entire synth -- both oscillators -- up or down at
+the octave interval. The parameter has a range of -2 to 2. The value is stored
+in the `octave` member variable.
+
+### Tuning
+
+Similar to octave, tuning is a setting that applies to the whole synth. Tuning
+adjusts the pitch in semitones. The parameter is displayed as a percentage from
+-100% to 100%. The value is stored in the `tuning` member variable.
+
+### Output Level
+
+Output level adjusts the volume of the synth, from -24 to +6 dB, displayed as
+the floats themselves from -24 to 6. The value is stored in the `outputLevel`
+member variable.
