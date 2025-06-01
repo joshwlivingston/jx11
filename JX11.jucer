@@ -15,6 +15,7 @@
             file="Source/PluginProcessor.cpp"/>
       <FILE id="qUMk1q" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
+      <FILE id="mX4GtV" name="Preset.h" compile="0" resource="0" file="Source/Preset.h"/>
       <FILE id="DE6WJn" name="Synth.cpp" compile="1" resource="0" file="Source/Synth.cpp"/>
       <FILE id="kcEBrh" name="Synth.h" compile="0" resource="0" file="Source/Synth.h"/>
       <FILE id="m9lNeA" name="Utils.h" compile="0" resource="0" file="Source/Utils.h"/>

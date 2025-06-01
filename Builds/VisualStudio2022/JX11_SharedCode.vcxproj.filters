@@ -3546,6 +3546,9 @@
     <ClInclude Include="..\..\Source\PluginProcessor.h">
       <Filter>JX11\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Preset.h">
+      <Filter>JX11\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Synth.h">
       <Filter>JX11\Source</Filter>
     </ClInclude>

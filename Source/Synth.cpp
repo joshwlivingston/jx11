@@ -34,12 +34,12 @@ void Synth::render(float **outputBuffers, int sampleCount) {
   // loop through samples in buffer one by one
   for (int sample = 0; sample < sampleCount; ++sample) {
     // get next output from noise generator
-    float noise = noiseGen.nextValue();
+    float noise = noiseGen.nextValue() * noiseMix;
 
     // If key is pressed, calculate the new sample value
     float output = 0.0f;
     if (voice.note > 0) {
-      output = voice.render();
+      output = voice.render() + noise;
     }
 
     // Write the output value into audio buffer(s)

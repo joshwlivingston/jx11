@@ -10,9 +10,12 @@
 
 #pragma once
 
-inline void protectYourEars(float* buffer, int sampleCount)
-{
-  if (buffer == nullptr) return;
+#include "juce_audio_processors/juce_audio_processors.h"
+#include <JuceHeader.h>
+
+inline void protectYourEars(float *buffer, int sampleCount) {
+  if (buffer == nullptr)
+    return;
   bool firstWarning = true;
   for (int i = 0; i < sampleCount; ++i) {
     float x = buffer[i];
@@ -50,4 +53,13 @@ inline void protectYourEars(float* buffer, int sampleCount)
       return;
     }
   }
+}
+
+template <typename T>
+inline static void castParameter(juce::AudioProcessorValueTreeState &apvts,
+                                 const juce::ParameterID &id, T &dest) {
+  dest = dynamic_cast<T>(apvts.getParameter(id.getParamID()));
+
+  // assert parameter exists and is of specified type
+  jassert(dest);
 }

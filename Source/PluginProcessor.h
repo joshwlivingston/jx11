@@ -29,8 +29,10 @@
 
 #include <JuceHeader.h>
 
+#include "Preset.h"
 #include "Synth.h"
-#include "juce_audio_processors/juce_audio_processors.h"
+#include "Utils.h"
+#include "juce_core/juce_core.h"
 
 namespace ParameterID {
 #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
@@ -69,7 +71,8 @@ PARAMETER_ID(polyMode)
 /**
  */
 // All juce functions and classes are in the juce namespace
-class JX11AudioProcessor : public juce::AudioProcessor {
+class JX11AudioProcessor : public juce::AudioProcessor,
+                           private juce::ValueTree::Listener {
 public:
   //==========================================================================
   JX11AudioProcessor();
@@ -123,10 +126,20 @@ private:
   void handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2);
   void render(juce::AudioBuffer<float> &buffer, int sampleCount,
               int bufferOffset);
-
   juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+  void valueTreePropertyChanged(juce::ValueTree &,
+                                const juce::Identifier &) override {
+    parametersChanged.store(true);
+  }
+  void updateParams();
+  void createPrograms();
 
   Synth synth;
+  std::vector<Preset> presets;
+  int currentProgram;
+
+  // store state about whether parameters have changed in a thread-safe variable
+  std::atomic<bool> parametersChanged{false};
 
   // midi parameters
   juce::AudioParameterFloat *oscMixParam;
