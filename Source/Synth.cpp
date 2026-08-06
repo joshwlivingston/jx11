@@ -25,11 +25,15 @@ void Synth::deallocateResources() {
 void Synth::reset() {
   voice.reset();
   noiseGen.reset();
+  pitchBend = 1.0f;
 }
 
 void Synth::render(float **outputBuffers, int sampleCount) {
   float *outputBufferLeft = outputBuffers[0];
   float *outputBufferRight = outputBuffers[1];
+
+  voice.osc1.period = voice.period * pitchBend;
+  voice.osc2.period = voice.osc1.period * detune;
 
   // loop through samples in buffer one by one
   for (int sample = 0; sample < sampleCount; ++sample) {
@@ -38,8 +42,8 @@ void Synth::render(float **outputBuffers, int sampleCount) {
 
     // If key is pressed, calculate the new sample value
     float output = 0.0f;
-    if (voice.note > 0) {
-      output = voice.render() + noise;
+    if (voice.env.isActive()) {
+      output = voice.render(noise);
     }
 
     // Write the output value into audio buffer(s)
@@ -72,22 +76,51 @@ void Synth::midiMessage(uint8_t status, uint8_t data0, uint8_t data1) {
     }
     break;
   }
+
+  // Pitch bend
+  case 0xE0:
+    pitchBend = std::exp(-0.000014102f * float(data0 + 128 * data1 - 8192));
+    break;
   }
 }
 
 void Synth::noteOn(int note, int velocity) {
   voice.note = note;
 
-  float freq = 440.0f * std::exp2(float(note - 69) / 12.0f);
+  float period = calcPeriod(note);
+  voice.period = period;
 
-  voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
-  voice.osc.period = sampleRate / freq;
-  voice.osc.reset();
+  voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
+  voice.osc2.amplitude = voice.osc1.amplitude * oscMix;  
+  
+  /* 
+  When the resets are commented out, the phase does not shift. 
+  So, each repeated note is different. Result: more continuous wave-like.
+     
+  When not commented out, each repeated note will start the same -
+  at the beginning of the phase
+  
+  voice.osc1.reset();
+  voice.osc2.reset(); -
+  */
+
+  Envelope& env = voice.env;
+  env.attackMultiplier = envAttack;
+  env.decayMultiplier = envDecay;
+  env.sustainLevel = envSustain;
+  env.releaseMultiplier = envRelease;
+  env.attack();
 }
 
 void Synth::noteOff(int note) {
   if (voice.note == note) {
-    voice.note = 0;
-    voice.osc.reset();
+      voice.release();
   }
+}
+
+float Synth::calcPeriod(int note) const
+{
+    float period = tune * std::exp(-0.05776226505f * float(note));
+    while (period < 6.0f || (period * detune) < 6.0f) { period += period; }
+    return period;
 }
