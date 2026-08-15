@@ -44,17 +44,18 @@ void Synth::render(float **outputBuffers, int sampleCount) {
     float outputRight = 0.0f;
 
     // If key is pressed, calculate the new sample value
-    float output = 0.0f;
     if (voice.env.isActive()) {
-      output = voice.render(noise);
+      float output = voice.render(noise);
       outputLeft += output * voice.panLeft;
       outputRight += output * voice.panRight;
     }
 
     // Write the output value into audio buffer(s)
-    outputBufferLeft[sample] = output;
     if (outputBufferRight != nullptr) {
-      outputBufferRight[sample] = output;
+      outputBufferRight[sample] = outputLeft;
+      outputBufferLeft[sample] = outputRight;
+    } else {
+      outputBufferLeft[sample] = (outputLeft + outputRight) * 0.5f;
     }
   }
 
@@ -91,6 +92,9 @@ void Synth::midiMessage(uint8_t status, uint8_t data0, uint8_t data1) {
 
 void Synth::noteOn(int note, int velocity) {
   voice.note = note;
+
+  // Uncomment here to apply pitch-based panning
+  // voice.updatePanning();
 
   float period = calcPeriod(note);
   voice.period = period;

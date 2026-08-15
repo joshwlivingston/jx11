@@ -12,6 +12,10 @@
 
 #include <cmath>
 
+static constexpr const float TWO_PI = 6.2861856071795864f;
+static constexpr const float PI = 3.1415926535897932f;
+static constexpr const float PI_OVER_FOUR = 0.7853981633974483f;
+
 // Implementation of osciallator logic. Also provided by juce::dsp::oscillator
 class Oscillator {
 public:
@@ -59,10 +63,6 @@ public:
   float amplitude = 1.0f;
 
 private:
-  static constexpr const float TWO_PI = 6.2861856071795864f;
-  static constexpr const float PI = 3.1415926535897932f;
-  static constexpr const float PI_OVER_FOUR = 0.7853981633974483f;
-
   float phase;
   float phaseMax;
   float inc;

@@ -45,4 +45,13 @@ struct Voice {
     float envelope = env.nextValue();
     return output * envelope;
   }
+
+  /* Adjust left and right pan based on note
+   * (low note = left, high note = right)
+   */
+  void updatePanning() {
+    float panning = std::clamp((note - 60.0f) / 24.0f, -1.0f, 1.0f);
+    panLeft = std::sin(PI_OVER_FOUR * (1.0f - panning));
+    panRight = std::sin(PI_OVER_FOUR * (1.0f + panning));
+  }
 };
