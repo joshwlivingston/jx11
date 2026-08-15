@@ -24,8 +24,8 @@ cmake --preset vs-debug
 cmake --build --preset vs-debug
 ```
 
-###  Windows
+##  Windows
 
-Note that on Windows, you may need to build from the "x64 Native Tools 
+Note that on Windows, you may need to use the "x64 Native Tools 
 Command Prompt" to ensure the MSVC compiler is used.
 
