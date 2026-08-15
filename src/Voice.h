@@ -18,6 +18,7 @@ struct Voice {
   int note;
   float saw;
   float period;
+  float panLeft, panRight;
   Oscillator osc1;
   Oscillator osc2;
   Envelope env;
@@ -28,6 +29,8 @@ struct Voice {
     osc1.reset();
     osc2.reset();
     env.reset();
+    panLeft = 0.707f;
+    panRight = 0.707f;
   }
 
   void release()

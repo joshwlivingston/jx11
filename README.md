@@ -9,3 +9,23 @@ This project is creating a replica of the
 The end result will be a synthesizer plugin, able to be used with any DAW.
 Becuase this synth is a digital evolution of the JX10, Hollemans names this
 synthesizer _JX11_.
+
+## Build
+
+Using Ninja:
+```sh
+cmake --preset ninja-debug
+cmake --build --preset ninja-debug
+```
+
+Using Visual Studio 17 2022:
+```sh
+cmake --preset vs-debug
+cmake --build --preset vs-debug
+```
+
+###  Windows
+
+Note that on Windows, you may need to build from the "x64 Native Tools 
+Command Prompt" to ensure the MSVC compiler is used.
+

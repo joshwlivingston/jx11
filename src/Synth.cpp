@@ -40,10 +40,15 @@ void Synth::render(float **outputBuffers, int sampleCount) {
     // get next output from noise generator
     float noise = noiseGen.nextValue() * noiseMix;
 
+    float outputLeft = 0.0f;
+    float outputRight = 0.0f;
+
     // If key is pressed, calculate the new sample value
     float output = 0.0f;
     if (voice.env.isActive()) {
       output = voice.render(noise);
+      outputLeft += output * voice.panLeft;
+      outputRight += output * voice.panRight;
     }
 
     // Write the output value into audio buffer(s)
