@@ -12,13 +12,20 @@ synthesizer _JX11_.
 
 ## Build
 
-Using Ninja:
+First, ensure [cmake](https://cmake.org/) is installed:
+```sh
+cmake --version
+```
+
+Then, build using one of the pre-defined build systems:
+
+### Ninja
 ```sh
 cmake --preset ninja-debug
 cmake --build --preset ninja-debug
 ```
 
-Using Visual Studio 17 2022:
+### Visual Studio 17 2022:
 ```sh
 cmake --preset vs-debug
 cmake --build --preset vs-debug
