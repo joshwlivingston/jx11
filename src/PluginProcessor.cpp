@@ -291,27 +291,27 @@ void JX11AudioProcessor::updateParams() {
   float sampleRate = float(getSampleRate());
   float inverseSampleRate = 1.0f / sampleRate;
 
-  synth.envAttack =
-      std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envAttackParam->get()));
+  synth.envAttack = std::exp(-inverseSampleRate *
+                             std::exp(5.5f - 0.075f * envAttackParam->get()));
 
-  synth.envDecay =
-      std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envDecayParam->get()));
+  synth.envDecay = std::exp(-inverseSampleRate *
+                            std::exp(5.5f - 0.075f * envDecayParam->get()));
 
   synth.envSustain = envSustainParam->get() / 100.0f;
 
   float envRelease = envReleaseParam->get();
   if (envRelease < 1.0f) {
-      synth.envRelease = 0.75f;
-  }
-  else {
-      synth.envRelease = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envRelease));
+    synth.envRelease = 0.75f;
+  } else {
+    synth.envRelease =
+        std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envRelease));
   }
 
   synth.oscMix = oscMixParam->get() / 100.0f;
 
   float semi = oscTuneParam->get();
   float cent = oscFineParam->get();
-  synth.detune = std::pow(2.0f, (- semi - 0.01f * cent) / 12.0f);
+  synth.detune = std::pow(2.0f, (-semi - 0.01f * cent) / 12.0f);
 
   float octave = octaveParam->get();
   float tuning = tuningParam->get();

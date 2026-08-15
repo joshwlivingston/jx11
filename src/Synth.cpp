@@ -96,20 +96,20 @@ void Synth::noteOn(int note, int velocity) {
   voice.period = period;
 
   voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
-  voice.osc2.amplitude = voice.osc1.amplitude * oscMix;  
-  
-  /* 
-  When the resets are commented out, the phase does not shift. 
+  voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
+
+  /*
+  When the resets are commented out, the phase does not shift.
   So, each repeated note is different. Result: more continuous wave-like.
-     
+
   When not commented out, each repeated note will start the same -
   at the beginning of the phase
-  
+
   voice.osc1.reset();
   voice.osc2.reset(); -
   */
 
-  Envelope& env = voice.env;
+  Envelope &env = voice.env;
   env.attackMultiplier = envAttack;
   env.decayMultiplier = envDecay;
   env.sustainLevel = envSustain;
@@ -119,13 +119,14 @@ void Synth::noteOn(int note, int velocity) {
 
 void Synth::noteOff(int note) {
   if (voice.note == note) {
-      voice.release();
+    voice.release();
   }
 }
 
-float Synth::calcPeriod(int note) const
-{
-    float period = tune * std::exp(-0.05776226505f * float(note));
-    while (period < 6.0f || (period * detune) < 6.0f) { period += period; }
-    return period;
+float Synth::calcPeriod(int note) const {
+  float period = tune * std::exp(-0.05776226505f * float(note));
+  while (period < 6.0f || (period * detune) < 6.0f) {
+    period += period;
+  }
+  return period;
 }

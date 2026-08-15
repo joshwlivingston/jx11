@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "Oscillator.h"
 #include "Envelope.h"
+#include "Oscillator.h"
 
 // The role of Voice is to produce the next output sample for a given note
 struct Voice {
@@ -33,10 +33,7 @@ struct Voice {
     panRight = 0.707f;
   }
 
-  void release()
-  {
-      env.release();
-  }
+  void release() { env.release(); }
 
   float render(float input) {
     float sample1 = osc1.nextSample();
