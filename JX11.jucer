@@ -5,6 +5,7 @@
               pluginManufacturer="Pug Synthesis" pluginManufacturerCode="PUGS">
   <MAINGROUP id="gWDY5d" name="JX11">
     <GROUP id="{B89CA08F-4F9D-A443-231A-9730A30AF7E2}" name="Source">
+      <FILE id="r458ac" name="Envelope.h" compile="0" resource="0" file="Source/Envelope.h"/>
       <FILE id="FYeZ9M" name="NoiseGenerator.h" compile="0" resource="0"
             file="Source/NoiseGenerator.h"/>
       <FILE id="AdUjmN" name="Oscillator.h" compile="0" resource="0" file="Source/Oscillator.h"/>
@@ -29,6 +30,8 @@
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
             useGlobalPath="1"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors_headless" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -57,6 +60,7 @@
         <MODULEPATH id="juce_graphics" path="../../Users/Josh Livingston/JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../Users/Josh Livingston/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../Users/Josh Livingston/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="../../Users/Josh Livingston/JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>

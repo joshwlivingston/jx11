@@ -61,14 +61,47 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <FILTER uid="5" x="0.3775" y="0.2983870967741936" useARA="0" uiLastX_Normal="282"
-          uiLastY_Normal="82" uiopen_Normal="0">
+  <FILTER uid="6" x="0.5125" y="0.655241935483871" useARA="0" uiLastX_Normal="430"
+          uiLastY_Normal="161" uiopen_Normal="0">
+    <PLUGIN name="SPAN" format="VST3" category="Fx|Analyzer" manufacturer="Voxengo"
+            version="3.23" file="C:\Program Files\Common Files\VST3\SPAN.vst3"
+            uniqueId="65d3dbf7" isInstrument="0" fileTime="1959f271ec0" infoUpdateTime="19fd2e6e79e"
+            numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
+            uid="c2a3d69d"/>
+    <STATE>1552.VMjLgbfA...O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9DCL2jiKmETahkWVhYjKt3xLtHVLtLCMUcGVvLWZhM0PEkib4EyXgolVQoUVUEVUAUyS1HjP28zbjoUQxI2bBQGVBIENGEDb2jlVzHDcMYCSjw1cvkzcmMCS1fmUzclRvrDbyDjKz4RUtsjdW4BYC4VcAgzcicCQ1sFNQYVZsQzSSIlTx0lZKgGTpIFd2czJiI2SkkSaoMWdIEjKwjUY4PWYyzjaCgCayz1MrgUNWIzT1LFVp0FTP41YjYCMSsBRTcWbmkTcIMDV2PWP2DTYrczRxEmQpUkcnsVRHYSbRYUNyX1aQc2MIEkPvsBctcSVJUUUvI0bUsjT0gVQJI0MBYyTIcFYAoWXCUEMUoETTASTU81MycGMpASSsQDMEYSQHUSLkI2UXgDLswDLwgjPz8zJScGdkICdMsVQKI2cpMUbvn0awfDNVc2JlUzMFYkVrIFTKgmQsIFdwk1a1fSUxbCcxbyR0n1aYUESiEFd1LGbVEiLqfkVYISVMMmbkYWMZkkL3LiVYUGaoYULwEGdwjzTqIGbWsTdUolUJsTYS4FQyk0YokiUTYiU1IzLLgVbXcDbCgUMzTDN5shPzUSYiwFN3T0Y2PFQKolaFcTawTzSDsDNyETdjYUT2TzQRUCUHsxX3E2LzAGS3UWav4VYlIlSAQyMCAEN0Q2XOgzPuQCYsIENBASNQU1MJAkYRIGV2glQ0Q0LvsxLUgSY5c0LlwzUQsRcCIWc1kzQ5EiasIkQEoEYokjQ48jYyPiMww1XHkCQxMiLAwjMisFSt41Svo1ZOElYu4hdjgWPxYWPtMlPwLjaxHDLiclTMAUTTUTbv3DbvcSbqDjL5AWNmQWcnIWLzLDcxbUN2UFYxbmbAQkTtzzYFsDRXwDLDcFSlYSXUQWVLEjLFsjSiQWLAczUrokQIQicHUySAUUSRYUR5cCLuMjaWsxbmIVN4XTTDM2SmUDQ2k1THgyc1gycqbiRwTSXJETctUWcFQ0MuMibQUEUw0jXskFLToFcvYGbJEmSXUUMvMTLMokKwLELtHWayEDVOIiP2ozUmAWSXwTRh4RSwHiM1o2bxUlPTAiRTsjQxIWa1LWQtYyJIc2TBQ0YOcyMYklP0UiY3jSSDM0U1YTRvgGbq0zTwXjb1olcDYTMWQFZkcTPiUjawPUTYECdrszUDImcqgyQqYmPtczYPgDTykkTvEEazb2R0.iQ3gWdXgEdqESdsIyJ4LkLqLSVHAWbBAyZJk2b4wTXNEWXggTXgQUVtLER0MmT4YTU3wjVY8jMRQ1aDMEc5AEa0sRctT0XuQTXVImbsc0bMg0YAcmd0cFSr0jVhkmUw8TdLklXzb2JyEVXHUWQx4Bcyj2StkUTlUkUYQFUYcjLw.ULw3lPv8DNrk2UhsFaLAGS4wTQWoVRGA0JZ8Fd1DDa3bkQ0PkUv.2ZUMlb3AmUwIGbvrTb0LyZUQCUVUEYk0zJEs1ZkUUSyAGN3ICRJQWROc2bu4DQ4X2YBoEdSEEQWYDbg0FVv0jROIjYqMEUFEVTKQiMK8DdSoWTPMEZVwVVpkEY2TGNZMTVgYyYEYSQNglSMAWT4EyPgQ2XUcGaqTSTqfzaxPyJ4Q1bmcSLKoVSXYVZrUDMhwVVUc2ZM8zc4sxPxTWYwQ1bmIWSzgja3L0JqbVSosTdLk2MxIWLQESLvUjduo1UKgCRtkTbVgGS3wzShIVXCQSdCY0Lm8zSnkSbHY1RAACaEI0TLk2YMMVXCkUb4EmPybiZ2ImcQ0jXjsFdxsFN2nTXsAyTNshaY0FL1rRZq3DZyM1PSsRRT8TQZgGcm8VLXwVQvDFYjM0ZkkEVNsDT0clTn4FYxbUNWUjZKcSbwbWaAsTc0w1UVQlTyLkY0kFZuMSN1L0Sro2XloWYsoFYMw1PlgWNvIUUhQDaqLjdD4BZIIDOujzPu0Fbu4VYtQmO77hUSQ0LPwVcmklaSQWXzUlO..</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="L R"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="L R"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="7" x="0.2325" y="0.6367112810707457" useARA="0" uiLastX_Normal="1264"
+          uiLastY_Normal="350" uiopen_Normal="0">
+    <PLUGIN name="s(M)exoscope" format="VST3" category="Fx" manufacturer="Smartelectronix"
+            version="1.1.0" file="C:\Program Files\smexoscope\Windows\s(M)exoscope.vst3"
+            uniqueId="933d9a01" isInstrument="0" fileTime="196799327b7" infoUpdateTime="19fd2e6e79f"
+            numInputs="0" numOutputs="0" isShell="0" hasARAExtension="0"
+            uid="3a42e06a"/>
+    <STATE>480.VMjLgbc....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9HyM13hUMczXWEjKt3hYt3hKt.kKt3hKt3BS5gEcyQjKt3hKqXTR5AkaA4hKtfjKTAWVrokKDAkKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt.ULHEVa08jKt3hKt3hKt3xMC4hKtX2SoI2XNshZykmL1LjKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKlIUUMQUTPkzUZESQFM1ZQQEV5UjQtDDQlAEMAcEV40zQtDDQ14hK5EjKt3hKt3hKt3hRUACTEEzZh8VVWgkdUYTTmE0UXwyKIMzasA2atUlaz4COuX0TTMCTrU2Yo41TzEFck4C.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="L R"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="L R"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="8" x="0.4475" y="0.3422562141491396" useARA="0">
     <PLUGIN name="JX11" format="VST3" category="Instrument|Synth" manufacturer="Pug Synthesis"
-            version="1.0.0" file="C:\Program Files\Common Files\VST3\JX11.vst3\Contents\x86_64-win\JX11.vst3"
-            uniqueId="57351b07" isInstrument="1" fileTime="1967967a624" infoUpdateTime="196a20ef475"
+            version="1.0.0" file="C:\projects\JX11\Builds\VisualStudio2022\x64\Debug\VST3\JX11.vst3\Contents\x86_64-win\JX11.vst3"
+            uniqueId="57351b07" isInstrument="1" fileTime="19fd2de5687" infoUpdateTime="19fd2e6e79f"
             numInputs="0" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="61c46130"/>
-    <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
+    <STATE>1595.VMjLgHiA...O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9DSLwDiKV0jZLcFRAEjKt3xSqX1UgIWPnM1ZIIiXugCaggCRRwDctjFRlQEagkFNFk0azDSV3fjTUQUVTszLHg2S43hPOAUQrI1YvXUV5UEahkGMC8DTEoFUAACQH8VTV8DZTwVXwTDQioWQwfUbIIDRwTjQgASUV8DZtj1R1gDdKkicCQUPIUETMEjTZoFLogzZzv1XDUULXc1ZsgjYXcEVxU0UYgCRR0jcyHDSncCZOciKUAkTEQ0TlolQYgCRRkEcY0FUqcmUYcVSWkEZtf1XmcmUisFLogTdtj1R14xPLYmKSwDMtjWS4A0PNECSogTcyLzSPUjZTEDLDgzaQY0SnQEagESSUMVdQcEVuQCaHYFVWgkbUcUV3fjTLYmKosjcHg2R4X2PTETRUAUSAIkVpASZHw1ZFEldUwlXAE0QicVSwnEZtf1XmcmUisFLogjcyHDSncCZOciKUAkTEQ0TlolQYgCRnk0a2YzXqkzQQsVSVgEMIIDRwTjQgASUV8DZLMDSz4xPLYmKCwzcpMDSxvzPMMCV4wDZ2f1S23RUPIUQTMkYpYTV3fDZY81cFM1ZIcUTzkUaHYFVWgkbUcUV3fjTMY2LBwDZ2f1S23RUPIUQTMkYpYTV3fDZY81cFM1ZI0VT3UkUhglKnM1Y2Y0XqASZHcmKCwDctjFR0MyPOAUQpQUPvPDRuEkUOgFVVokbQcUV3cmZQ8TRBgTLEYTXvTkUOglKosjcHg2R4X2PTETRUAUSAIkVpASZHw1ZFEldUwlXRUkQgsVQwH1ZIIDRwTjQgASUV8DZHMUSz4RZHU2LC8DTEoFUAACQH8VTV8DZXYkVxE0UYgWRUkUd3vFRlg0UXIWUWkENHIESvLiPLYmKCwjctLkSvvTZMICT4wDdHg2R4X2PTETRUAUSAIkVpASZHw1ZFEldUwlXSUkLhoWQVoEcIIDRwTjQgASUV8DZtj1R1gDdKkicCQUPIUETMEjTZoFLogDaqYTX5UEahYUUFEVcMYkV5sVaHYFVWgkbUcUV3fjPLQmKogTcyLzSPUjZTEDLDgzaQY0SnIlQg8VTVkkPUwVXpkjPHESQFEFLUY0Sn4RZKYGR3sTN1MDUAkTUP0TPRokZvjFRscmUZoVUVMUcQYUVn4BZic1cVM1ZvjFR1MiPLg1Mn8zMtTETRUDUSYlZFkENHgWVxslQYsVRUgkdUwFRlg0UXIWUWkENHgGSvLiPLg1Mn8zMtTETRUDUSYlZFkENHITXrgCaTcVTWkEZtf1XmcmUisFLogjcyHjS24xPLYmKCwjcHkGSy.0TLMCUC4DZ2f1S23RUPIUQTMkYpYTV3fDZgU2ZwH1ZIIDRwTjQgASUV8DZtj1R1gDdKkicCQUPIUETMEjTZoFLogTcMYzXmk0UYglKnM1Y2Y0XqASZHY2LBwDZ2f1S23RUPIUQTMkYpYTV3fDdgkWSrE0azXUVn4BZic1cVM1ZvjFR1MiPLg1Mn8zMtTETRUDUSYlZFkENHgWX40jUS81YsgjYXcEVxU0UYgCRBwDctjFR0MyPOAUQpQUPvPDRuEkUOg1MwHVZQU0XzUEaHYFVWgkbUcUV3fjTKcGRosjcHg2R4X2PTETRUAUSAIkVpASZHUWUGMlcUczXLUEais1crgjYXcEVxU0UYgCRBwDctjFR0MyPOAUQpQUPvPDRuEkUOglKxDlbqc0T0EkUYglKnM1Y2Y0XqASZHc2LBwDZ2f1S23RUPIUQTMkYpYTV3fjPiACMVoEciwFRlg0UXIWUWkENHIDSz4RZHU2LC8DTEoFUAACQH8VTV8DZXckVnkzUXoGNrgjYXcEVxU0UYgCRBwDctjFR0MyPOUmKUgEdEYUXqE0UYgWSs8jKt3hKt3hKt3hKt3hRUACTEEzZh8VVWgkdUYTTmE0UX4BQP4hPqcjXm0jLh4BQP4xPt.0Qt3hKt3hKt3hKtQUUCUEQTg2ZrM1YQcUVDUjQicVP77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
     <LAYOUT>
       <INPUTS/>
       <OUTPUTS>
@@ -76,43 +109,11 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <FILTER uid="6" x="0.5125" y="0.655241935483871" useARA="0">
-    <PLUGIN name="SPAN" format="VST3" category="Fx|Analyzer" manufacturer="Voxengo"
-            version="3.23" file="C:\Program Files\Common Files\VST3\SPAN.vst3"
-            uniqueId="65d3dbf7" isInstrument="0" fileTime="1959f271ec0" infoUpdateTime="196a20ef476"
-            numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
-            uid="c2a3d69d"/>
-    <STATE>1549.VMjLgPfA...O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9DCL2biKmETahkWVhYjKt3xLtHVLtLCMUcGVvLWZhM0PEkib4EyXgolRHM2XUsjVAo0a1HUQvoWY2.UQxImYtcESAkjRUYlVKU0b3TDR1vDYrcmVSg1P2kULqMmXCgzcEgDYtX1Rv4RMBciP1ElK2XjYDIycS4xUwbTPNQlT2vzcIcGYRQGRCEEdIcTY2Hyc4bCMk4TLNUmKtXGcGgmL1LTNHUCT0kTNIUWPrsRQ2oWNGcDMIQDQZ4lL4jidgclRjUESzzTVtjlLMY1SyPFYxYGcZAkUAsjUrYlb0oTVzj1PrYTQ40FQI4VN1bFd0Q0avIUUvMmVQUSUxAUTncEVkoTR5sjYjcjaJUmTCgFbNAmRqUWSzYlbzQiZHUGV04RTxjSZ3HzPukiZuQVQQYGNzTlRVkCLJICUVImcFMkS0YUbqoUZ5EVQqLjU1s1b5wDMlYkZM4DMpc0QS8TM2ISNmISN4UiZukUULM1Q3EVcvYULxPCUZkkLi0zbxUmM0nUVxXidZkUYOczbxUWcJEVaLUEdvQ1bLcUTZ8lb2zzYRoGaE4TMKA0bgMzRlkGRzg1Xt4jYu0VaxL0JKMCbq.SVwHyUAgmMQIGTnokXho0U2.kb5ICQLYSVEc2UhgzaSc1MxzTcncDb3gzJjQGZ4DDdzPjZ48TPvrRMwfiYLoFa1LlRvrDU1bDN2EmKAozcnUzRZciTmEWNocELqDUYmMDdhUDNqHkc4HTahAUXoQlRYQkazzDaXwzJHgVa0UmVwb1LSYGZ0oDVwXiRYAUTkQURKUVLtLUPtgiZog0YCAkMDIWaPsBVTISbUAWPJgFbXMWLQU0ZOMiMhMUb0TWL3r1Zv3TY1kFY1cDYqPWZYMjap4hVB0jUPYGVvkjPY4hLwQEcYwTPxXzRNUFcwDzQWwlVFkDMyfTMO4RUMIkUIo2Mv71Ptc0JyclX4jiQQQzbOcVQDcWZSgDN2YGN28zXEEFNMslYWomLWMjR4PkXw3lRvAiQzk2cZojTWUEVUsVUGImRiASP1XTStXCMZ4RLyokKwrjbPIGdU4lVCYzTBcDTogCNN4zXKYSYDAmVEAWQCYUL4gSLFoGNqn1LIEDb1cDY4HWTmIiX1kyJBg1aKgUZDUUVvfGaIYiKVgkTXIzP3rzS2UGZlQ1RtECUQkUL3w1RWIjb1s1PGslcB4ValAERPMWVRAWTrQyc4YCLFgGd4gEV3sVLxzlLqX1a1T1MggDbgIDLqoTdykGSgECdy0jZy0DbLYVRpIiUukUZJkkQyIWaikTcTgVRWoER4IyJsYFbzQEZMsjUwjWbwDjb1YFV0z1TFkmQMQWVwASaYwVTzcybqLWXggTcMImKzMSdOAWVQYVUVkEYTk0UxDCTwDiaBA2S3vVdWo0ZrwDbLkGSEckZIcDTqn0a3YSPrgyUFUCUVACbqU0XvgGbVEmbvAyRwUidqUEMTYUUjUVSqTzZqUVUMMGb3fmLHoDcI8zcy8lSDkicmIjV3kGTDIiKvEVaXAWSJ8jPls1TTYTXQsDMGozS3MkdIA0TnYEaYoVVjcSc3n0PYElMmUjME4DZN0DbQkWLCEFciU0crsRMgkCYRU2R4bDNZMDMiYERgYmKG0zR3QCS4AGZKEFYrsxMxL1JvMmMvXDdwLCZlEyS3rxQwvDcLkGS4kGdZcTVgEmUP0lTjMmdSYFaxoUR4gTd2X2cy0jZ0gDVmcTN2fTMOklKz4DUgYERMcGSGEidy0jZy4TcJYVdSYTdBcDL1QSUJkmUwjWbxMlUOQyMow1XVU2JOkiMHESLMwDNsAENL4VR1XDaZkVVVQUczPSSUkib1IlUlQ1PqQTT33DT4bUQpszMwEycsEzR0UGaWYEYRMSdlUWZn81L4XyTOwldicldk0lZj0DaCYFd4.mTUIFQrsRZwc1RrYDOujzPu0Fbu4VYtQmO77hUSQ0LPwVcmklaSQWXzUlO..</STATE>
-    <LAYOUT>
-      <INPUTS>
-        <BUS index="0" layout="L R"/>
-      </INPUTS>
-      <OUTPUTS>
-        <BUS index="0" layout="L R"/>
-      </OUTPUTS>
-    </LAYOUT>
-  </FILTER>
-  <FILTER uid="7" x="0.2325" y="0.6391129032258065" useARA="0">
-    <PLUGIN name="s(M)exoscope" format="VST3" category="Fx" manufacturer="Smartelectronix"
-            version="1.1.0" file="C:\Program Files\smexoscope\Windows\s(M)exoscope.vst3"
-            uniqueId="933d9a01" isInstrument="0" fileTime="196799327b7" infoUpdateTime="196a20ef476"
-            numInputs="0" numOutputs="0" isShell="0" hasARAExtension="0"
-            uid="3a42e06a"/>
-    <STATE>480.VMjLgbc....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9HyM13hUMczXWEjKt3hYt3hKt.kKt3hKt3BS5gEcyQjKt3hKqXTR5AkaA4hKtfjKTAWVrokKDAkKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt.kQt3hK18jKt3hKt3hKt3xMC4hKtX2St3hKPshKt3hK2LjKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKt3hKlIUUMQUTPkzUZESQFM1ZQQEV5UjQtDDQlAEMAcEV40zQtDDQ14hK5EjKt3hKt3hKt3hRUACTEEzZh8VVWgkdUYTTmE0UXwyKIMzasA2atUlaz4COuX0TTMCTrU2Yo41TzEFck4C.</STATE>
-    <LAYOUT>
-      <INPUTS>
-        <BUS index="0" layout="L R"/>
-      </INPUTS>
-      <OUTPUTS>
-        <BUS index="0" layout="L R"/>
-      </OUTPUTS>
-    </LAYOUT>
-  </FILTER>
-  <CONNECTION srcFilter="2" srcChannel="4096" dstFilter="5" dstChannel="4096"/>
-  <CONNECTION srcFilter="5" srcChannel="0" dstFilter="3" dstChannel="0"/>
-  <CONNECTION srcFilter="5" srcChannel="1" dstFilter="3" dstChannel="1"/>
-  <CONNECTION srcFilter="5" srcChannel="0" dstFilter="6" dstChannel="0"/>
-  <CONNECTION srcFilter="5" srcChannel="1" dstFilter="6" dstChannel="1"/>
-  <CONNECTION srcFilter="5" srcChannel="0" dstFilter="7" dstChannel="0"/>
-  <CONNECTION srcFilter="5" srcChannel="1" dstFilter="7" dstChannel="1"/>
+  <CONNECTION srcFilter="2" srcChannel="4096" dstFilter="8" dstChannel="4096"/>
+  <CONNECTION srcFilter="8" srcChannel="0" dstFilter="3" dstChannel="0"/>
+  <CONNECTION srcFilter="8" srcChannel="1" dstFilter="3" dstChannel="1"/>
+  <CONNECTION srcFilter="8" srcChannel="0" dstFilter="6" dstChannel="0"/>
+  <CONNECTION srcFilter="8" srcChannel="1" dstFilter="6" dstChannel="1"/>
+  <CONNECTION srcFilter="8" srcChannel="0" dstFilter="7" dstChannel="0"/>
+  <CONNECTION srcFilter="8" srcChannel="1" dstFilter="7" dstChannel="1"/>
 </FILTERGRAPH>
