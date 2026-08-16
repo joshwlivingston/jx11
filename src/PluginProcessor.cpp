@@ -332,6 +332,14 @@ void JX11AudioProcessor::updateParams() {
   synth.volumeTrim =
       0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * 1.5f;
 
+  float filterVelocity = filterVelocityParam->get();
+  if (filterVelocity < -90.0f) {
+    synth.velocitySensitivity = 0.0f;
+    synth.ignoreVelocity = true;
+  } else {
+    synth.velocitySensitivity = 0.0005f * filterVelocity;
+    synth.ignoreVelocity = false;
+  }
   synth.outputLevelSmoother.setTargetValue(
       juce::Decibels::decibelsToGain(outputLevelParam->get()));
 }

@@ -43,6 +43,8 @@ public:
   float tune;
   float pitchBend;
   float volumeTrim;
+  float velocitySensitivity;
+  bool ignoreVelocity;
   juce::LinearSmoothedValue<float> outputLevelSmoother;
 
   static constexpr int MAX_VOICES = 8;

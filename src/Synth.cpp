@@ -116,8 +116,11 @@ void Synth::midiMessage(uint8_t status, uint8_t data0, uint8_t data1) {
 }
 
 void Synth::noteOn(int note, int velocity) {
-  int v = 0;
+  if (ignoreVelocity) {
+    velocity = 80;
+  }
 
+  int v = 0;
   if (numVoices == 1) {
     // monophonic
     if (voices[0].note > 0) {
@@ -143,7 +146,8 @@ void Synth::startVoice(int v, int note, int velocity) {
   // Uncomment here to apply pitch-based panning
   // voice.updatePanning();
 
-  voice.osc1.amplitude = volumeTrim * velocity;
+  float vel = 0.004f * float((velocity + 64) * (velocity + 64)) - 8.0f;
+  voice.osc1.amplitude = volumeTrim * vel;
   voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
 
   /*
