@@ -33,6 +33,7 @@ void Synth::reset() {
   outputLevelSmoother.reset(sampleRate, 0.05);
   lfo = 0.0f;
   lfoStep = 0;
+  modWheel = 0.0f;
 }
 
 void Synth::render(float **outputBuffers, int sampleCount) {
@@ -112,11 +113,22 @@ void Synth::midiMessage(uint8_t status, uint8_t data0, uint8_t data1) {
   }
 
   // Pitch bend
-  case 0xE0:
+  case 0xE0: {
     // bend up or down by two semitones
     static const float TWO_SEMITONES = -0.000014102f;
     pitchBend = std::exp(TWO_SEMITONES * float(data0 + 128 * data1 - 8192));
     break;
+  }
+
+  // Mod wheel
+  case 0xB0: {
+    uint8_t controller = data0 & 0x7F;
+    uint8_t value = data1 & 0x7F;
+    if (controller == 0x01) { // Mod Wheel
+      modWheel = 0.000005f * float(value * value);
+    }
+    break;
+  }
   }
 }
 
@@ -154,6 +166,10 @@ void Synth::startVoice(int v, int note, int velocity) {
   float vel = 0.004f * float((velocity + 64) * (velocity + 64)) - 8.0f;
   voice.osc1.amplitude = volumeTrim * vel;
   voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
+
+  if (vibrato == 0.0f && pwmDepth > 0.0f) {
+    voice.osc2.squareWave(voice.osc1, voice.period);
+  }
 
   /*
   When the resets are commented out, the phase does not shift.
@@ -264,12 +280,13 @@ void Synth::updateLFO() {
     const float sine = std::sin(lfo);
 
     // Calculate a vibrato amount and assign to oscillators
-    float vibratoMod = 1.0f + sine * vibrato;
+    float vibratoMod = 1.0f + sine * (modWheel + vibrato);
+    float pwm = 1.0f + sine * (modWheel + pwmDepth);
     for (int v = 0; v < MAX_VOICES; ++v) {
       Voice &voice = voices[v];
       if (voice.env.isActive()) {
         voice.osc1.modulation = vibratoMod;
-        voice.osc2.modulation = vibratoMod;
+        voice.osc2.modulation = pwm;
       }
     }
   }

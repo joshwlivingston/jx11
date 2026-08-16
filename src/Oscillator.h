@@ -59,6 +59,30 @@ public:
     return output - dc;
   }
 
+  void squareWave(Oscillator &other, float newPeriod) {
+    // If oscillator has been used already, skipping reset could result in
+    // stale oscillator values
+    reset();
+
+    if (other.inc > 0.0f) {
+      phase = other.phaseMax + other.phaseMax - other.phase;
+      inc = -other.inc;
+    } else if (other.inc < 0.0f) {
+      phase = other.phase;
+      inc = other.inc;
+    } else {
+      // If the other oscillator has not started yet, we have to guess
+      // where its peaks will be
+      phase = -PI;
+      inc = PI;
+    }
+
+    // Shift by half a period to place ourselves halfway between the peaks
+    // of the other oscillator
+    phase += PI * newPeriod / 2.0f;
+    phaseMax = phase;
+  }
+
   float period = 0.0f;
   float amplitude = 1.0f;
   float modulation = 1.0f;

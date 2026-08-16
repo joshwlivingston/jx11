@@ -54,6 +54,7 @@ public:
   float lfoInc;
 
   float vibrato;
+  float pwmDepth;
 
 private:
   void noteOn(int note, int velocity);
@@ -70,4 +71,5 @@ private:
   NoiseGenerator noiseGen;
   int lfoStep;
   float lfo;
+  float modWheel;
 };
