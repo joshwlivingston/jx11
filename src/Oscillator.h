@@ -32,7 +32,7 @@ public:
     float output = 0.0f;
     phase += inc;
     if (phase <= PI_OVER_FOUR) {
-      float halfPeriod = period / 2.0f;
+      float halfPeriod = (period / 2.0f) * modulation;
       phaseMax = std::floor(0.5f + halfPeriod) - 0.5f;
       dc = 0.5f * amplitude / phaseMax;
       phaseMax *= PI;
@@ -61,6 +61,7 @@ public:
 
   float period = 0.0f;
   float amplitude = 1.0f;
+  float modulation = 1.0f;
 
 private:
   float phase;

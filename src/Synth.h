@@ -50,6 +50,11 @@ public:
   static constexpr int MAX_VOICES = 8;
   int numVoices;
 
+  const int LFO_MAX = 32; // How often LFO is updated (in samples)
+  float lfoInc;
+
+  float vibrato;
+
 private:
   void noteOn(int note, int velocity);
   void noteOff(int note);
@@ -58,8 +63,11 @@ private:
   void restartMonoVoice(int note, int velocity);
   void shiftQueuedNotes();
   int nextQueuedNote();
+  void updateLFO();
 
   float sampleRate;
   std::array<Voice, MAX_VOICES> voices;
   NoiseGenerator noiseGen;
+  int lfoStep;
+  float lfo;
 };
