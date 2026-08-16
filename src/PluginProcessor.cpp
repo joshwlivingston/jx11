@@ -8,6 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_core/juce_core.h"
 
@@ -141,7 +142,11 @@ void JX11AudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 
 void JX11AudioProcessor::releaseResources() { synth.deallocateResources(); }
 
-void JX11AudioProcessor::reset() { synth.reset(); }
+void JX11AudioProcessor::reset() {
+  synth.reset();
+  synth.outputLevelSmoother.setCurrentAndTargetValue(
+      juce::Decibels::decibelsToGain(outputLevelParam->get()));
+}
 
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool JX11AudioProcessor::isBusesLayoutSupported(
@@ -321,6 +326,14 @@ void JX11AudioProcessor::updateParams() {
   float noiseMix = noiseParam->get() / 100.0f;
   noiseMix *= noiseMix;
   synth.noiseMix = noiseMix * 0.06f;
+
+  synth.numVoices = (polyModeParam->getIndex() == 0) ? 1 : Synth::MAX_VOICES;
+
+  synth.volumeTrim =
+      0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * 1.5f;
+
+  synth.outputLevelSmoother.setTargetValue(
+      juce::Decibels::decibelsToGain(outputLevelParam->get()));
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout

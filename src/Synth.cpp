@@ -12,6 +12,8 @@
 
 #include "Utils.h"
 
+static const float ANALOG = 0.002f;
+
 Synth::Synth() { sampleRate = 44100.0f; }
 
 void Synth::allocateResources(double sampleRate_, int /*samplePerBlock*/) {
@@ -23,17 +25,25 @@ void Synth::deallocateResources() {
 }
 
 void Synth::reset() {
-  voice.reset();
+  for (int v = 0; v < MAX_VOICES; ++v) {
+    voices[v].reset();
+  }
   noiseGen.reset();
   pitchBend = 1.0f;
+  outputLevelSmoother.reset(sampleRate, 0.05);
 }
 
 void Synth::render(float **outputBuffers, int sampleCount) {
   float *outputBufferLeft = outputBuffers[0];
   float *outputBufferRight = outputBuffers[1];
 
-  voice.osc1.period = voice.period * pitchBend;
-  voice.osc2.period = voice.osc1.period * detune;
+  for (int v = 0; v < MAX_VOICES; ++v) {
+    Voice &voice = voices[v];
+    if (voice.env.isActive()) {
+      voice.osc1.period = voice.period * pitchBend;
+      voice.osc2.period = voice.osc1.period * detune;
+    }
+  }
 
   // loop through samples in buffer one by one
   for (int sample = 0; sample < sampleCount; ++sample) {
@@ -44,11 +54,17 @@ void Synth::render(float **outputBuffers, int sampleCount) {
     float outputRight = 0.0f;
 
     // If key is pressed, calculate the new sample value
-    if (voice.env.isActive()) {
-      float output = voice.render(noise);
-      outputLeft += output * voice.panLeft;
-      outputRight += output * voice.panRight;
+    for (int v = 0; v < MAX_VOICES; ++v) {
+      Voice &voice = voices[v];
+      if (voice.env.isActive()) {
+        float output = voice.render(noise);
+        outputLeft += output * voice.panLeft;
+        outputRight += output * voice.panRight;
+      }
     }
+    float outputLevel = outputLevelSmoother.getNextValue();
+    outputLeft *= outputLevel;
+    outputRight *= outputLevel;
 
     // Write the output value into audio buffer(s)
     if (outputBufferRight != nullptr) {
@@ -56,6 +72,13 @@ void Synth::render(float **outputBuffers, int sampleCount) {
       outputBufferLeft[sample] = outputRight;
     } else {
       outputBufferLeft[sample] = (outputLeft + outputRight) * 0.5f;
+    }
+  }
+
+  for (int v = 0; v < MAX_VOICES; ++v) {
+    Voice &voice = voices[v];
+    if (!voice.env.isActive()) {
+      voice.env.reset();
     }
   }
 
@@ -85,21 +108,42 @@ void Synth::midiMessage(uint8_t status, uint8_t data0, uint8_t data1) {
 
   // Pitch bend
   case 0xE0:
-    pitchBend = std::exp(-0.000014102f * float(data0 + 128 * data1 - 8192));
+    // bend up or down by two semitones
+    static const float TWO_SEMITONES = -0.000014102f;
+    pitchBend = std::exp(TWO_SEMITONES * float(data0 + 128 * data1 - 8192));
     break;
   }
 }
 
 void Synth::noteOn(int note, int velocity) {
+  int v = 0;
+
+  if (numVoices == 1) {
+    // monophonic
+    if (voices[0].note > 0) {
+      // legato-style playing
+      shiftQueuedNotes();
+      restartMonoVoice(note, velocity);
+      return;
+    }
+  } else {
+    // polyphonic
+    v = findFreeVoice();
+  }
+  startVoice(v, note, velocity);
+}
+
+void Synth::startVoice(int v, int note, int velocity) {
+  float period = calcPeriod(v, note);
+
+  Voice &voice = voices[v];
+  voice.period = period;
   voice.note = note;
 
   // Uncomment here to apply pitch-based panning
   // voice.updatePanning();
 
-  float period = calcPeriod(note);
-  voice.period = period;
-
-  voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
+  voice.osc1.amplitude = volumeTrim * velocity;
   voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
 
   /*
@@ -122,15 +166,73 @@ void Synth::noteOn(int note, int velocity) {
 }
 
 void Synth::noteOff(int note) {
-  if (voice.note == note) {
-    voice.release();
+  if ((numVoices == 1) && (voices[0].note == note)) {
+    int queuedNote = nextQueuedNote();
+    if (queuedNote > 0) {
+      restartMonoVoice(queuedNote, -1);
+    }
+  }
+  for (int v = 0; v < MAX_VOICES; v++) {
+    Voice &voice = voices[v];
+    if (voice.note == note) {
+      voice.release();
+      voice.note = 0;
+    }
   }
 }
 
-float Synth::calcPeriod(int note) const {
-  float period = tune * std::exp(-0.05776226505f * float(note));
+float Synth::calcPeriod(int v, int note) const {
+  float period =
+      tune * std::exp(-0.05776226505f * (float(note) + ANALOG * float(v)));
   while (period < 6.0f || (period * detune) < 6.0f) {
     period += period;
   }
   return period;
+}
+
+int Synth::findFreeVoice() const {
+  int v = 0;
+  float l = 100.0f;
+
+  for (int i = 0; i < MAX_VOICES; ++i) {
+    if (voices[i].env.level < l && !voices[i].env.isInAttack()) {
+      l = voices[i].env.level;
+      v = i;
+    }
+  }
+  return v;
+}
+
+void Synth::restartMonoVoice(int note, int velocity) {
+  float period = calcPeriod(0, note);
+  Voice &voice = voices[0];
+  voice.period = period;
+
+  voice.env.level += SILENCE + SILENCE;
+  voice.note = note;
+
+  // Uncomment here to include pitch-based panning
+  // voice.updatePanning();
+}
+
+void Synth::shiftQueuedNotes() {
+  for (int tmp = MAX_VOICES - 1; tmp > 0; tmp--) {
+    voices[tmp].note = voices[tmp - 1].note;
+    voices[tmp].release();
+  }
+}
+
+int Synth::nextQueuedNote() {
+  int held = 0;
+  for (int v = MAX_VOICES - 1; v > 0; v--) {
+    if (voices[v].note > 0) {
+      held = v;
+    }
+  }
+  if (held > 0) {
+    int note = voices[held].note;
+    voices[held].note = 0;
+    return note;
+  }
+  return 0;
 }

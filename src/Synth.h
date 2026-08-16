@@ -31,7 +31,7 @@ public:
   void reset();
   void render(float **outputBuffers, int sampleCount);
   void midiMessage(uint8_t data0, uint8_t data1, uint8_t data2);
-  float calcPeriod(int note) const;
+  float calcPeriod(int v, int note) const;
 
   float noiseMix;
   float envAttack;
@@ -42,12 +42,22 @@ public:
   float detune;
   float tune;
   float pitchBend;
+  float volumeTrim;
+  juce::LinearSmoothedValue<float> outputLevelSmoother;
+
+  static constexpr int MAX_VOICES = 8;
+  int numVoices;
 
 private:
   void noteOn(int note, int velocity);
   void noteOff(int note);
+  void startVoice(int v, int note, int velocity);
+  int findFreeVoice() const;
+  void restartMonoVoice(int note, int velocity);
+  void shiftQueuedNotes();
+  int nextQueuedNote();
 
   float sampleRate;
-  Voice voice;
+  std::array<Voice, MAX_VOICES> voices;
   NoiseGenerator noiseGen;
 };
