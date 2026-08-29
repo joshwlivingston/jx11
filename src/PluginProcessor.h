@@ -37,6 +37,7 @@
 #include "Preset.h"
 #include "Synth.h"
 #include "Utils.h"
+#include "juce_audio_processors_headless/juce_audio_processors_headless.h"
 
 namespace ParameterID {
 #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
@@ -137,10 +138,15 @@ private:
   }
   void updateParams();
   void createPrograms();
+  void updateChangeControl(juce::AudioParameterFloat *param, float data);
+  void handleControlChange(uint8_t cc, uint8_t value);
+  void updatePolyModeControl();
+  void initCCMap();
 
   Synth synth;
   std::vector<Preset> presets;
   int currentProgram;
+  juce::AudioParameterFloat *ccLookup[128] = {nullptr};
 
   // store state about whether parameters have changed in a thread-safe variable
   std::atomic<bool> parametersChanged{false};

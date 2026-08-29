@@ -10,7 +10,9 @@
 #include "PluginEditor.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_audio_processors/juce_audio_processors.h"
+#include "juce_audio_processors_headless/juce_audio_processors_headless.h"
 #include "juce_core/juce_core.h"
+#include <cstdint>
 
 //==============================================================================
 JX11AudioProcessor::JX11AudioProcessor()
@@ -58,6 +60,7 @@ JX11AudioProcessor::JX11AudioProcessor()
   // hook up the apvts to the listener, valueTreePropertyChanged()
   apvts.state.addListener(this);
 
+  initCCMap();
   createPrograms();
   setCurrentProgram(0);
 }
@@ -240,6 +243,11 @@ void JX11AudioProcessor::handleMIDI(uint8_t status, uint8_t data0,
   DBG(data0);
   DBG(data1);
 
+  if ((status & 0xF0) == 0xB0) {
+    // Handle any control changes
+    handleControlChange(data0, data1);
+  }
+
   // change the preset
   if ((status & 0xF0) == 0xC0) {
     if (data0 < presets.size()) {
@@ -364,6 +372,52 @@ void JX11AudioProcessor::updateParams() {
                                       std::exp(6.0f - 0.07f * glideRate));
   }
   synth.glideBend = glideBendParam->get();
+}
+
+void JX11AudioProcessor::updateChangeControl(juce::AudioParameterFloat *param,
+                                             float data) {
+  float newCtl = data / 127.0f;
+  param->beginChangeGesture();
+  param->setValueNotifyingHost(newCtl);
+  param->endChangeGesture();
+}
+
+inline void JX11AudioProcessor::handleControlChange(uint8_t cc, uint8_t value) {
+  if (cc < 128 && ccLookup[cc]) {
+    updateChangeControl(ccLookup[cc], value);
+    return;
+  }
+}
+
+void JX11AudioProcessor::updatePolyModeControl() {
+  polyModeParam->beginChangeGesture();
+  polyModeParam->setValueNotifyingHost((polyModeParam->getIndex() == 0) ? 1
+                                                                        : 0);
+  polyModeParam->endChangeGesture();
+}
+
+void JX11AudioProcessor::initCCMap() {
+  // Filter controls
+  ccLookup[0x50] = filterAttackParam;
+  ccLookup[0x51] = filterDecayParam;
+  ccLookup[0x52] = filterSustainParam;
+  ccLookup[0x53] = filterReleaseParam;
+
+  // Envelope controls
+  ccLookup[0x55] = envAttackParam;
+  ccLookup[0x56] = envDecayParam;
+  ccLookup[0x57] = envSustainParam;
+  ccLookup[0x58] = envReleaseParam;
+  ccLookup[0x61] = vibratoParam;
+  ccLookup[0x77] = lfoRateParam;
+
+  // Master volume
+  ccLookup[0x03] = outputLevelParam;
+
+  // Oscillator levels
+  ccLookup[0x59] = oscTuneParam;
+  ccLookup[0x5A] = oscMixParam;
+  ccLookup[0x60] = oscFineParam;
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout
