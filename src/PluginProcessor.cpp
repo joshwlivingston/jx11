@@ -337,8 +337,11 @@ void JX11AudioProcessor::updateParams() {
 
   synth.numVoices = (polyModeParam->getIndex() == 0) ? 1 : Synth::MAX_VOICES;
 
-  synth.volumeTrim =
-      0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * 1.5f;
+  float filterReso = filterResoParam->get() / 100.0f;
+  synth.filterQ = std::exp(3.0f * filterReso);
+
+  synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) *
+                     (1.5f - 0.5f * filterReso);
 
   float filterVelocity = filterVelocityParam->get();
   if (filterVelocity < -90.0f) {
@@ -350,6 +353,8 @@ void JX11AudioProcessor::updateParams() {
   }
   synth.outputLevelSmoother.setTargetValue(
       juce::Decibels::decibelsToGain(outputLevelParam->get()));
+
+  synth.filterKeyTracking = 0.08f * filterFreqParam->get() - 1.5f;
 
   const float inverseUpdateRate = inverseSampleRate * synth.LFO_MAX;
   float lfoRate = std::exp(7.0f * lfoRateParam->get() - 4.0f);
@@ -372,6 +377,21 @@ void JX11AudioProcessor::updateParams() {
                                       std::exp(6.0f - 0.07f * glideRate));
   }
   synth.glideBend = glideBendParam->get();
+
+  float filterLFO = filterLFOParam->get() / 100.0f;
+  synth.filterLFODepth = 2.5f * filterLFO * filterLFO;
+
+  synth.filterAttack = std::exp(
+      -inverseUpdateRate * std::exp(5.5f - 0.075f * filterAttackParam->get()));
+  synth.filterDecay = std::exp(
+      -inverseUpdateRate * std::exp(5.5f - 0.075f * filterDecayParam->get()));
+  synth.filterRelease = std::exp(
+      -inverseUpdateRate * std::exp(5.5f - 0.075f * filterReleaseParam->get()));
+
+  float filterSustain = filterSustainParam->get() / 100.0f;
+  synth.filterSustain = filterSustain * filterSustain;
+
+  synth.filterEnvDepth = 0.06f * filterEnvParam->get();
 }
 
 void JX11AudioProcessor::updateChangeControl(juce::AudioParameterFloat *param,
@@ -389,27 +409,24 @@ inline void JX11AudioProcessor::handleControlChange(uint8_t cc, uint8_t value) {
   }
 }
 
-void JX11AudioProcessor::updatePolyModeControl() {
-  polyModeParam->beginChangeGesture();
-  polyModeParam->setValueNotifyingHost((polyModeParam->getIndex() == 0) ? 1
-                                                                        : 0);
-  polyModeParam->endChangeGesture();
-}
-
 void JX11AudioProcessor::initCCMap() {
   // Filter controls
   ccLookup[0x50] = filterAttackParam;
   ccLookup[0x51] = filterDecayParam;
   ccLookup[0x52] = filterSustainParam;
   ccLookup[0x53] = filterReleaseParam;
+  ccLookup[0x74] = filterFreqParam;
+  ccLookup[0x75] = filterResoParam;
+  ccLookup[0x76] = filterEnvParam;
+  ccLookup[0x77] = filterLFOParam;
 
   // Envelope controls
   ccLookup[0x55] = envAttackParam;
   ccLookup[0x56] = envDecayParam;
   ccLookup[0x57] = envSustainParam;
   ccLookup[0x58] = envReleaseParam;
+  ccLookup[0x60] = lfoRateParam;
   ccLookup[0x61] = vibratoParam;
-  ccLookup[0x77] = lfoRateParam;
 
   // Master volume
   ccLookup[0x03] = outputLevelParam;
@@ -417,7 +434,6 @@ void JX11AudioProcessor::initCCMap() {
   // Oscillator levels
   ccLookup[0x59] = oscTuneParam;
   ccLookup[0x5A] = oscMixParam;
-  ccLookup[0x60] = oscFineParam;
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout

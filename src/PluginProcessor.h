@@ -140,7 +140,6 @@ private:
   void createPrograms();
   void updateChangeControl(juce::AudioParameterFloat *param, float data);
   void handleControlChange(uint8_t cc, uint8_t value);
-  void updatePolyModeControl();
   void initCCMap();
 
   Synth synth;

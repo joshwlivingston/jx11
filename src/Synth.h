@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <stdint.h>
 
 #include <juce_audio_basics/juce_audio_basics.h>
@@ -60,6 +61,14 @@ public:
   float glideRate;
   float glideBend;
 
+  float filterKeyTracking;
+
+  float filterQ;
+  float filterLFODepth;
+
+  float filterAttack, filterDecay, filterSustain, filterRelease;
+  float filterEnvDepth;
+
 private:
   void noteOn(int note, int velocity);
   void noteOff(int note);
@@ -70,6 +79,7 @@ private:
   int nextQueuedNote();
   void updateLFO();
   bool isPlayingLegatoStyle() const;
+  void updateControlChange(uint8_t data0, uint8_t data1);
 
   inline void updatePeriod(Voice &voice) {
     voice.osc1.period = voice.period * pitchBend;
@@ -83,4 +93,6 @@ private:
   float lfo;
   float modWheel;
   int lastNote;
+  float resonanceCtl;
+  float filterZip;
 };
