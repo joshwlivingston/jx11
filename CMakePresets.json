@@ -14,16 +14,9 @@
       "binaryDir": "${sourceDir}/build/ninja",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_COMPILER": "cl",
-        "CMAKE_CXX_COMPILER": "cl"
+        "CMAKE_C_COMPILER": "/Library/Developer/CommandLineTools/usr/bin/clang",
+        "CMAKE_CXX_COMPILER": "/Library/Developer/CommandLineTools/usr/bin/clang++"
       }
-    },
-    {
-      "name": "vs-debug",
-      "displayName": "Visual Studio Debug",
-      "description": "Configures the JX11 plugin using the Visual Studio 2022 generator",
-      "generator": "Visual Studio 17 2022",
-      "binaryDir": "${sourceDir}/build/vs"
     }
   ],
   "buildPresets": [
@@ -31,12 +24,6 @@
       "name": "ninja-debug",
       "displayName": "Build with Ninja",
       "configurePreset": "ninja-debug"
-    },
-    {
-      "name": "vs-debug",
-      "displayName": "Build with Visual Studio",
-      "configurePreset": "vs-debug",
-      "configuration": "Debug"
     }
   ]
 }
