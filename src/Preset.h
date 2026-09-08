@@ -10,17 +10,17 @@
 
 #pragma once
 
-#include <cstring>
+#include <juce_core/juce_core.h>
 
 static constexpr const int NUM_PARAMS = 26;
 
 struct Preset {
-  Preset(const char *name, float p0, float p1, float p2, float p3, float p4,
+  Preset(const juce::String &name, float p0, float p1, float p2, float p3, float p4,
          float p5, float p6, float p7, float p8, float p9, float p10, float p11,
          float p12, float p13, float p14, float p15, float p16, float p17,
          float p18, float p19, float p20, float p21, float p22, float p23,
-         float p24, float p25) {
-    strcpy_s(this->name, name);
+         float p24, float p25) 
+    : name(name) {
     param[0] = p0;   // Osc Mix
     param[1] = p1;   // Osc Tune
     param[2] = p2;   // Osc Fine
@@ -48,6 +48,6 @@ struct Preset {
     param[24] = p24; // Output Level
     param[25] = p25; // Polyphony
   }
-  char name[40];
+  juce::String name;
   float param[NUM_PARAMS];
 };
