@@ -5,15 +5,15 @@ project(JX11 VERSION 1.0.0)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Point this to wherever your JUCE framework is located. 
-set(JUCE_ROOT "C:/Users/Josh Livingston/JUCE")
+set(JUCE_ROOT "$ENV{HOME}/app/JUCE")
 add_subdirectory("${JUCE_ROOT}" build_juce)
 
 # Define the plugin and its properties
 juce_add_plugin(JX11
-    COMPANY_NAME "Square Rock"
-    PLUGIN_MANUFACTURER_CODE "SQR" 
+    COMPANY_NAME "SquareRock"
+    PLUGIN_MANUFACTURER_CODE "SQRK" 
     PLUGIN_CODE "Jx11"              
-    FORMATS VST3 Standalone         
+    FORMATS AU Standalone         
     PRODUCT_NAME "JX11"
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
@@ -26,7 +26,6 @@ juce_add_plugin(JX11
 # Add compile options
 target_compile_definitions(JX11 PRIVATE
     JUCE_STRICT_REFCOUNTEDPOINTER=1
-    JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
 # Add source code and headers
@@ -62,10 +61,10 @@ target_link_libraries(JX11 PRIVATE
     juce::juce_gui_extra
 )
 
-# Configure the Visual Studio debugger to launch AudioPluginHost for the VST3 target
-if(CMAKE_GENERATOR MATCHES "Visual Studio")
-    set_target_properties(JX11_VST3 PROPERTIES
-        # Set your  AudioPluginHost path here
-        VS_DEBUGGER_COMMAND "C:/Users/Josh Livingston/JUCE_old/extras/AudioPluginHost/Builds/VisualStudio2022/x64/Release/App/AudioPluginHost.exe"
+if(APPLE)
+    set(USER_COMPONENT_DIR "$ENV{HOME}/Library/Audio/Plug-Ins/Components")
+    add_custom_command(
+        TARGET JX11_AU POST_BUILD
+        COMMAND codesign --force --deep --sign - "${USER_COMPONENT_DIR}/JX11.component"
     )
 endif()
