@@ -5,8 +5,7 @@ project(JX11 VERSION 1.0.0)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Point this to wherever your JUCE framework is located. 
-set(JUCE_ROOT "C:/Users/Josh Livingston/JUCE")
-add_subdirectory("${JUCE_ROOT}" build_juce)
+add_subdirectory(modules/JUCE)
 
 # Define the plugin and its properties
 juce_add_plugin(JX11
@@ -32,6 +31,8 @@ target_compile_definitions(JX11 PRIVATE
 # Add source code and headers
 target_sources(JX11 PRIVATE
     src/Envelope.h
+    src/LookAndFeel.cpp
+    src/LookAndFeel.h
     src/NoiseGenerator.h
     src/Oscillator.h
     src/PluginEditor.cpp
