@@ -16,6 +16,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include "PluginProcessor.h"
+#include "RotaryKnob.h"
 
 //==============================================================================
 /**
@@ -33,6 +34,27 @@ private:
   // This reference is provided as a quick way for your editor to
   // access the processor object that created it.
   JX11AudioProcessor &audioProcessor;
+
+  using APVTS = juce::AudioProcessorValueTreeState;
+  using SliderAttachment = APVTS::SliderAttachment;
+  using ButtonAttachment = APVTS::ButtonAttachment;
+
+  // attachments must be declared after the ui they are attached to
+  // why? becuase JUCE's garbage collector destroys objects in the class from
+  // bottom up
+  RotaryKnob outputLevelKnob;
+  SliderAttachment outputLevelAttachment{audioProcessor.apvts,
+                                         ParameterID::outputLevel.getParamID(),
+                                         outputLevelKnob.slider};
+
+  RotaryKnob filterResoKnob;
+  SliderAttachment filterResoAttachment{audioProcessor.apvts,
+                                        ParameterID::filterReso.getParamID(),
+                                        filterResoKnob.slider};
+
+  juce::TextButton polyModeButton;
+  ButtonAttachment polyModeAttachment{
+      audioProcessor.apvts, ParameterID::polyMode.getParamID(), polyModeButton};
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JX11AudioProcessorEditor)
 };

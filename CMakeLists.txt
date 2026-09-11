@@ -40,6 +40,8 @@ target_sources(JX11 PRIVATE
     src/PluginProcessor.h
     src/Preset.h
     src/Synth.cpp
+    src/RotaryKnob.cpp
+    src/RotaryKnob.h
     src/Synth.h
     src/Utils.h
     src/Voice.h
