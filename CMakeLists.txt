@@ -43,8 +43,12 @@ target_sources(JX11 PRIVATE
     src/Synth.cpp
     src/RotaryKnob.cpp
     src/RotaryKnob.h
+    src/Slider.cpp
+    src/Slider.h
     src/Synth.h
     src/Utils.h
+    src/VerticalSlider.cpp
+    src/VerticalSlider.h
     src/Voice.h
 )
 

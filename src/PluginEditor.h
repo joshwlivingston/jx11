@@ -18,6 +18,7 @@
 #include "LookAndFeel.h"
 #include "PluginProcessor.h"
 #include "RotaryKnob.h"
+#include "VerticalSlider.h"
 
 //==============================================================================
 /**
@@ -54,6 +55,11 @@ private:
   SliderAttachment filterResoAttachment{audioProcessor.apvts,
                                         ParameterID::filterReso.getParamID(),
                                         filterResoKnob.slider};
+
+  VerticalSlider ampAttackSlider;
+  SliderAttachment ampAttackAttachment{audioProcessor.apvts,
+                                       ParameterID::envAttack.getParamID(),
+                                       ampAttackSlider.slider};
 
   juce::TextButton polyModeButton;
   ButtonAttachment polyModeAttachment{

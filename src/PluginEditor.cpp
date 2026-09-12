@@ -19,6 +19,9 @@ JX11AudioProcessorEditor::JX11AudioProcessorEditor(JX11AudioProcessor &p)
   filterResoKnob.label = "Reso";
   addAndMakeVisible(filterResoKnob);
 
+  ampAttackSlider.label = "Amp Attack";
+  addAndMakeVisible(ampAttackSlider);
+
   polyModeButton.setButtonText("Poly");
   polyModeButton.setClickingTogglesState(true);
   addAndMakeVisible(polyModeButton);
@@ -37,7 +40,10 @@ void JX11AudioProcessorEditor::paint(juce::Graphics &g) {
 }
 
 void JX11AudioProcessorEditor::resized() {
-  juce::Rectangle r(20, 20, 100, 120);
+  juce::Rectangle r(20, 20, 75, 150);
+  ampAttackSlider.setBounds(r);
+
+  r = r.withY(r.getBottom() + 20).withWidth(100).withHeight(120);
   outputLevelKnob.setBounds(r);
 
   r = r.withX(r.getRight() + 20);
