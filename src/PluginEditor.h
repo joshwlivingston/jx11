@@ -15,6 +15,7 @@
 #include <juce_graphics/juce_graphics.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
+#include "LookAndFeel.h"
 #include "PluginProcessor.h"
 #include "RotaryKnob.h"
 
@@ -34,6 +35,8 @@ private:
   // This reference is provided as a quick way for your editor to
   // access the processor object that created it.
   JX11AudioProcessor &audioProcessor;
+
+  LookAndFeel globalLNF;
 
   using APVTS = juce::AudioProcessorValueTreeState;
   using SliderAttachment = APVTS::SliderAttachment;
