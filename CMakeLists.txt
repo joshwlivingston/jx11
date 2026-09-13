@@ -8,9 +8,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_subdirectory(modules/JUCE)
 
 # Define the plugin and its properties
-set(JUCE_PLUGIN_FORMATS Standalone VST3)
+set(FORMATS Standalone VST3)
 if(APPLE)
-    list(APPEND JUCE_PLUGIN_FORMATS AU)
+    list(APPEND FORMATS AU)
+    set(JUCE_AU_COPY_DIR "$ENV{HOME}/Library/Audio/Plug-Ins/Components")
 endif()
 
 juce_add_plugin(JX11
@@ -18,6 +19,7 @@ juce_add_plugin(JX11
     PLUGIN_MANUFACTURER_CODE "SQRK" 
     PLUGIN_CODE "Jx11"              
     PRODUCT_NAME "JX11"
+    FORMATS ${FORMATS}
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT TRUE
@@ -82,11 +84,10 @@ target_link_libraries(JX11 PRIVATE
 
 if(APPLE)
     if(TARGET JX11_AU)
-        set(USER_COMPONENT_DIR "$ENV{HOME}/Library/Audio/Plug-Ins/Components")
         add_custom_command(
             TARGET JX11_AU POST_BUILD
-            COMMAND codesign --force --deep --sign - "${USER_COMPONENT_DIR}/JX11.component"
-            COMMENT "Ad-hoc signing AU component for macOS"
+            COMMAND codesign --force --deep --sign - "${JUCE_AU_COPY_DIR}/JX11.component"
+            COMMENT "Ad-hoc signing AU component at ${JUCE_AU_COPY_DIR}/JX11.component"
         )
     endif()
 endif()
@@ -96,4 +97,4 @@ if(CMAKE_GENERATOR MATCHES "Visual Studio")
         # Set your  AudioPluginHost path here
         VS_DEBUGGER_COMMAND "modules/JUCE/extras/AudioPluginHost/Builds/VisualStudio2022/x64/Release/App/AudioPluginHost.exe"
     )
-)
+endif()
