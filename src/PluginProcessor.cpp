@@ -274,9 +274,7 @@ bool JX11AudioProcessor::hasEditor() const {
 }
 
 juce::AudioProcessorEditor *JX11AudioProcessor::createEditor() {
-  auto editor = new juce::GenericAudioProcessorEditor(*this);
-  editor->setSize(500, 1050);
-  return editor;
+  return new JX11AudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -850,4 +848,9 @@ void JX11AudioProcessor::createPrograms() {
                        -36.00f, 40.00f, 65.00f, 90.00f, 0.00f, 0.00f, 33.00f,
                        50.00f, 0.00f, 25.00f, 0.00f, 70.00f, 65.00f, 18.00f,
                        0.32f, 100.00f, 0.00f, -2.00f, 0.00f, 0.00f, 1.00f);
+  presets.emplace_back("song-bass", 100.00f, -12.00f, -10.9f, 0.00f, 19.00f,
+                       50.00f, 33.00f, 64.00f, 2.70f, 30.00f, -100.00f, 0.00f,
+                       88.00f, 0.00f, 21.00f, 0.00f, 50.00f, 100.00f, 46.00f,
+                       0.628729601955f, 40.20f, 0.00f, -1.00f, 0.00f, 0.00f,
+                       1.00f);
 }
