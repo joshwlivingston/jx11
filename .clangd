@@ -1,3 +1,2 @@
 CompileFlags:
   CompilationDatabase: build/ninja
-  Add: ["--driver-mode=cl"]

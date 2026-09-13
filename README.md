@@ -17,22 +17,26 @@ First, ensure [cmake](https://cmake.org/) is installed:
 cmake --version
 ```
 
-Then, build using one of the pre-defined build systems:
+Then, build using one of the pre-defined presets:
 
-### Ninja
+### Default / Ninja
 ```sh
-cmake --preset ninja-debug
-cmake --build --preset ninja-debug
+cmake --preset debug
+cmake --build --preset debug
 ```
 
-### Visual Studio 17 2022:
+### Visual Studio 17 2022
 ```sh
-cmake --preset vs-debug
-cmake --build --preset vs-debug
+cmake --preset vs2022-debug
+cmake --build --preset vs2022-debug
+```
+
+To use a custom `AudioPluginHost` executable when debugging on Windows, configure with `-DAUDIO_PLUGIN_HOST_PATH`:
+```sh
+cmake --preset vs2022-debug -DAUDIO_PLUGIN_HOST_PATH="C:/path/to/AudioPluginHost.exe"
 ```
 
 ##  Windows
 
 Note that on Windows, you may need to use the "x64 Native Tools 
 Command Prompt" to ensure the MSVC compiler is used.
-
