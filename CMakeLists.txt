@@ -31,10 +31,16 @@ target_compile_definitions(JX11 PRIVATE
 # Add source code and headers
 target_sources(JX11 PRIVATE
     src/Envelope.h
+    src/EnvelopeGroup.cpp
+    src/EnvelopeGroup.h
+    src/FilterKnobGroup.cpp
+    src/FilterKnobGroup.h
     src/LookAndFeel.cpp
     src/LookAndFeel.h
     src/NoiseGenerator.h
     src/Oscillator.h
+    src/OscillatorGroup.cpp
+    src/OscillatorGroup.h
     src/PluginEditor.cpp
     src/PluginEditor.h
     src/PluginProcessor.cpp
@@ -49,6 +55,8 @@ target_sources(JX11 PRIVATE
     src/Utils.h
     src/VerticalSlider.cpp
     src/VerticalSlider.h
+    src/VibratoGroup.cpp
+    src/VibratoGroup.h
     src/Voice.h
 )
 

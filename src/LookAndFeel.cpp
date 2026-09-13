@@ -5,27 +5,57 @@
 #include <cmath>
 
 LookAndFeel::LookAndFeel() {
-  setColour(juce::ResizableWindow::backgroundColourId,
-            juce::Colour(30, 60, 90));
+  // Set all colors derived from bacgkround color
+  static const juce::Colour textColor = backgroundColor.getLightness() < 0.5
+                                            ? juce::Colour(255, 255, 255)
+                                            : juce::Colour(0, 0, 0);
+  static const juce::Colour textColorInverse =
+      backgroundColor.getLightness() > 0.5 ? juce::Colour(255, 255, 255)
+                                           : juce::Colour(0, 0, 0);
+  static const juce::Colour activeColor =
+      adjustLightness(backgroundColor, 2.0f);
+  static const juce::Colour trackBackground =
+      gray(adjustLightness(backgroundColor, 2.0f), 3.0f);
+  static const juce::Colour offColor = gray(backgroundColor, 3.0f);
+  static const juce::Colour outlineColor = makeOutline(backgroundColor, 2.0f);
 
-  setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colour(0, 0, 0));
-  setColour(juce::Slider::rotarySliderFillColourId, juce::Colour(90, 180, 240));
-  setColour(juce::Slider::thumbColourId, juce::Colour(255, 255, 255));
+  // Set background color
+  setColour(juce::ResizableWindow::backgroundColourId, backgroundColor);
+
+  // Shared by RotaryKnob and Vertical Slider
+  setColour(juce::Slider::thumbColourId, textColor);
+  setColour(juce::Label::textColourId, textColor);
+  setColour(juce::Slider::textBoxTextColourId, textColor);
+  setColour(juce::TextEditor::textColourId, textColor);
+  setColour(juce::Slider::textBoxOutlineColourId, outlineColor);
+
+  // RotaryKnob colors
+  setColour(juce::Slider::rotarySliderOutlineColourId, offColor);
+  setColour(juce::Slider::rotarySliderFillColourId, activeColor);
+
+  // VerticalSlider colors
+  setColour(juce::Slider::trackColourId, activeColor);
+  setColour(juce::Slider::backgroundColourId, offColor);
 
   // Adjust colors on buttons to make on/off  (or different values) better
   // differentiated
-  setColour(juce::TextButton::buttonColourId, juce::Colour(15, 30, 45));
-  setColour(juce::TextButton::buttonOnColourId, juce::Colour(90, 180, 240));
-  setColour(juce::TextButton::textColourOffId, juce::Colour(180, 180, 180));
-  setColour(juce::TextButton::textColourOnId, juce::Colour(255, 255, 255));
-  setColour(juce::ComboBox::outlineColourId, juce::Colour(180, 180, 180));
+  setColour(juce::TextButton::buttonColourId, offColor);
+  setColour(juce::TextButton::buttonOnColourId, activeColor);
+  setColour(juce::TextButton::textColourOffId, textColor);
+  setColour(juce::TextButton::textColourOnId, textColorInverse);
+  setColour(juce::ComboBox::outlineColourId, outlineColor);
+
+  // Group Component colors
+  setColour(juce::GroupComponent::outlineColourId, outlineColor);
+  setColour(juce::GroupComponent::textColourId, textColor);
 }
 
 void LookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
                                    int height, float sliderPos,
                                    float rotaryStartAngle, float rotaryEndAngle,
                                    juce::Slider &slider) {
-  auto outlineColor = slider.findColour(juce::Slider::rotarySliderFillColourId);
+  auto outlineColor =
+      slider.findColour(juce::Slider::rotarySliderOutlineColourId);
 
   auto fillColor = slider.findColour(juce::Slider::rotarySliderFillColourId);
   auto dialColor = slider.findColour(juce::Slider::thumbColourId);
@@ -96,9 +126,9 @@ void LookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width,
         (style == juce::Slider::SliderStyle::ThreeValueVertical ||
          style == juce::Slider::SliderStyle::ThreeValueHorizontal);
 
-    auto trackWidth =
-        juce::jmin(6.0f, slider.isHorizontal() ? (float)height * 0.25f
-                                               : (float)width * 0.25f);
+    auto trackWidth = juce::jmin((float)sliderTrackWidth,
+                                 slider.isHorizontal() ? (float)height * 0.25f
+                                                       : (float)width * 0.25f);
 
     juce::Point<float> startPoint(
         slider.isHorizontal() ? (float)x : (float)x + (float)width * 0.5f,
@@ -187,4 +217,37 @@ void LookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width,
     if (slider.isBar())
       drawLinearSliderOutline(g, x, y, width, height, style, slider);
   }
+}
+
+int LookAndFeel::getSliderThumbRadius(juce::Slider &slider) {
+  return juce::jmin(sliderTrackWidth,
+                    slider.isHorizontal()
+                        ? static_cast<int>((float)slider.getHeight() * 0.5f)
+                        : static_cast<int>((float)slider.getWidth() * 0.5f));
+}
+
+const juce::Colour LookAndFeel::adjustLightness(const juce::Colour &color,
+                                                float factor) {
+  if (color.getLightness() > 0.5f) {
+    return color.withLightness(color.getLightness() / factor);
+  }
+
+  if (color.getLightness() < 0.5f) {
+    float newLightness = color.getLightness() * factor;
+    if (newLightness > 1.0f) {
+      newLightness = 1.0f;
+    }
+    return color.withLightness(newLightness);
+  }
+
+  return color;
+}
+
+const juce::Colour LookAndFeel::gray(const juce::Colour &color, float factor) {
+  return color.withSaturationHSL(color.getSaturationHSL() / factor);
+}
+
+const juce::Colour LookAndFeel::makeOutline(const juce::Colour &color,
+                                            float factor) {
+  return gray(adjustLightness(color, factor), factor);
 }

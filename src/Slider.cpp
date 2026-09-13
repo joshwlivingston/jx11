@@ -16,8 +16,7 @@ void JX11Slider::paint(juce::Graphics &g) {
   g.fillAll(
       getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
   g.setFont(15.0f);
-  g.setColour(juce::Colours::white);
-
+  g.setColour(getLookAndFeel().findColour(juce::Label::textColourId));
   auto bounds = getLocalBounds();
   g.drawText(label, juce::Rectangle<int>{0, 0, bounds.getWidth(), labelHeight},
              juce::Justification::centred);

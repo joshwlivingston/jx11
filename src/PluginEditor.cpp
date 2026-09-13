@@ -16,19 +16,21 @@ JX11AudioProcessorEditor::JX11AudioProcessorEditor(JX11AudioProcessor &p)
   outputLevelKnob.label = "Level";
   addAndMakeVisible(outputLevelKnob);
 
-  filterResoKnob.label = "Reso";
-  addAndMakeVisible(filterResoKnob);
+  addAndMakeVisible(ampEnvGroup);
+  addAndMakeVisible(filterEnvGroup);
 
-  ampAttackSlider.label = "Amp Attack";
-  addAndMakeVisible(ampAttackSlider);
+  addAndMakeVisible(filterKnobGroup);
+  addAndMakeVisible(oscillatorGroup);
+  addAndMakeVisible(vibratoGroup);
 
   polyModeButton.setButtonText("Poly");
   polyModeButton.setClickingTogglesState(true);
   addAndMakeVisible(polyModeButton);
 
-  juce::LookAndFeel::setDefaultLookAndFeel(&globalLNF);
+  setLookAndFeel(&globalLNF);
 
-  setSize(600, 400);
+  setResizable(true, true);
+  setSize(1000, 800);
 }
 
 JX11AudioProcessorEditor::~JX11AudioProcessorEditor() {}
@@ -40,15 +42,38 @@ void JX11AudioProcessorEditor::paint(juce::Graphics &g) {
 }
 
 void JX11AudioProcessorEditor::resized() {
-  juce::Rectangle r(20, 20, 75, 150);
-  ampAttackSlider.setBounds(r);
+  auto r = getLocalBounds();
 
-  r = r.withY(r.getBottom() + 20).withWidth(100).withHeight(120);
+  r.setX(20);
+  r.setY(20);
+  r.setWidth((r.getWidth() - 80) / 2);
+  r.setHeight((r.getHeight() - 80) / 2);
+  filterEnvGroup.setBounds(r);
+
+  r.setX(r.getRight() + 40);
+  ampEnvGroup.setBounds(r);
+
+  r.setX(20);
+  r.setY(r.getBottom() + 20);
+  r.setWidth(450);
+  r.setHeight(350);
+  filterKnobGroup.setBounds(r);
+
+  r.setX(r.getRight() + 40);
+  r.setHeight(r.getHeight() / 2 + 40);
+  oscillatorGroup.setBounds(r);
+
+  r.setY(r.getBottom() + 20);
+  r.setX(r.getX() + 75);
+  r.setWidth(300);
+  vibratoGroup.setBounds(r);
+
+  r.setX(r.getRight() + 20);
+  r.setWidth(100);
+  r.setHeight(120);
   outputLevelKnob.setBounds(r);
 
-  r = r.withX(r.getRight() + 20);
-  filterResoKnob.setBounds(r);
-
+  r.setX(r.getRight() + 20);
   polyModeButton.setSize(80, 30);
-  polyModeButton.setCentrePosition(r.withX(r.getRight()).getCentre());
+  polyModeButton.setCentrePosition(r.getCentre());
 }
