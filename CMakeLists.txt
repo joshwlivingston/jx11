@@ -11,7 +11,6 @@ add_subdirectory(modules/JUCE)
 set(FORMATS Standalone VST3)
 if(APPLE)
     list(APPEND FORMATS AU)
-    set(JUCE_AU_COPY_DIR "$ENV{HOME}/Library/Audio/Plug-Ins/Components")
 endif()
 
 juce_add_plugin(JX11
@@ -31,6 +30,7 @@ juce_add_plugin(JX11
 # Add compile options
 target_compile_definitions(JX11 PRIVATE
     JUCE_STRICT_REFCOUNTEDPOINTER=1
+    JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
 # Add source code and headers
@@ -86,15 +86,24 @@ if(APPLE)
     if(TARGET JX11_AU)
         add_custom_command(
             TARGET JX11_AU POST_BUILD
-            COMMAND codesign --force --deep --sign - "${JUCE_AU_COPY_DIR}/JX11.component"
-            COMMENT "Ad-hoc signing AU component at ${JUCE_AU_COPY_DIR}/JX11.component"
+            COMMAND codesign --force --deep --sign - "$<TARGET_BUNDLE_DIR:JX11_AU>"
+            COMMENT "Ad-hoc signing AU component at $<TARGET_BUNDLE_DIR:JX11_AU>"
         )
     endif()
 endif()
 
-if(CMAKE_GENERATOR MATCHES "Visual Studio")
-    set_target_properties(JX11_VST3 PROPERTIES
-        # Set your  AudioPluginHost path here
-        VS_DEBUGGER_COMMAND "modules/JUCE/extras/AudioPluginHost/Builds/VisualStudio2022/x64/Release/App/AudioPluginHost.exe"
+if(CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC)
+    # 1. Define a cache variable with a default relative path.
+    #    Developers can override this via -DAUDIO_PLUGIN_HOST_PATH="..." or in CMakeUserPresets.json
+    set(AUDIO_PLUGIN_HOST_PATH 
+        "${CMAKE_CURRENT_SOURCE_DIR}/modules/JUCE/extras/AudioPluginHost/Builds/VisualStudio2022/x64/Release/App/AudioPluginHost.exe" 
+        CACHE PATH "Path to the AudioPluginHost executable for debugging"
     )
+
+    # 2. Set the debugger command target property using the variable
+    if(TARGET JX11_VST3)
+        set_target_properties(JX11_VST3 PROPERTIES
+            VS_DEBUGGER_COMMAND "${AUDIO_PLUGIN_HOST_PATH}"
+        )
+    endif()
 endif()
