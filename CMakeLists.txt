@@ -96,7 +96,7 @@ if(CMAKE_GENERATOR MATCHES "Visual Studio" OR MSVC)
     # 1. Define a cache variable with a default relative path.
     #    Developers can override this via -DAUDIO_PLUGIN_HOST_PATH="..." or in CMakeUserPresets.json
     set(AUDIO_PLUGIN_HOST_PATH 
-        "${CMAKE_CURRENT_SOURCE_DIR}/modules/JUCE/extras/AudioPluginHost/Builds/VisualStudio2022/x64/Release/App/AudioPluginHost.exe" 
+        "${CMAKE_CURRENT_SOURCE_DIR}/modules/JUCE/extras/AudioPluginHost/Builds/VisualStudio2022/x64/Debug/App/AudioPluginHost.exe" 
         CACHE PATH "Path to the AudioPluginHost executable for debugging"
     )
 
