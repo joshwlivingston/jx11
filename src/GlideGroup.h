@@ -3,10 +3,11 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include "RotaryKnob.h"
+#include "SegmentedControl.h"
 
 class GlideGroup : public juce::Component {
 public:
-  GlideGroup(juce::String groupLabel, juce::ComboBox &glideMode,
+  GlideGroup(juce::String groupLabel, SegmentedControl &glideMode,
              RotaryKnob &glideRate, RotaryKnob &glideBend);
   ~GlideGroup() override;
 
@@ -16,7 +17,7 @@ public:
 
 private:
   juce::GroupComponent group;
-  juce::ComboBox &glideModeBox;
+  SegmentedControl &glideModeSelector;
   RotaryKnob &glideRateKnob, &glideBendKnob;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GlideGroup)

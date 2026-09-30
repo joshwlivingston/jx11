@@ -42,6 +42,8 @@ target_sources(JX11 PRIVATE
     src/FilterKnobGroup.h
     src/GlideGroup.cpp
     src/GlideGroup.h
+    src/IOSSwitch.cpp
+    src/IOSSwitch.h
     src/LookAndFeel.cpp
     src/LookAndFeel.h
     src/NoiseGenerator.h
@@ -52,13 +54,22 @@ target_sources(JX11 PRIVATE
     src/PluginEditor.h
     src/PluginProcessor.cpp
     src/PluginProcessor.h
+    src/PresetDisplay.cpp
+    src/PresetDisplay.h
     src/Preset.h
     src/Synth.cpp
     src/RotaryKnob.cpp
     src/RotaryKnob.h
+    src/SegmentedControl.cpp
+    src/SegmentedControl.h
+    src/Skin.h
     src/Slider.cpp
     src/Slider.h
     src/Synth.h
+    src/SynthPanel.cpp
+    src/SynthPanel.h
+    src/Textures.cpp
+    src/Textures.h
     src/Utils.h
     src/VerticalSlider.cpp
     src/VerticalSlider.h

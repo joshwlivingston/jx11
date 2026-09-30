@@ -18,10 +18,14 @@
 #include "EnvelopeGroup.h"
 #include "FilterKnobGroup.h"
 #include "GlideGroup.h"
+#include "IOSSwitch.h"
 #include "LookAndFeel.h"
 #include "OscillatorGroup.h"
 #include "PluginProcessor.h"
+#include "PresetDisplay.h"
 #include "RotaryKnob.h"
+#include "SegmentedControl.h"
+#include "SynthPanel.h"
 #include "VerticalSlider.h"
 #include "VibratoGroup.h"
 
@@ -44,10 +48,13 @@ private:
 
   LookAndFeel globalLNF;
 
+  // Every control lives on this panel, which the editor scales as a whole.
+  // Declared before the controls so it outlives them.
+  SynthPanel panel;
+
   using APVTS = juce::AudioProcessorValueTreeState;
   using SliderAttachment = APVTS::SliderAttachment;
   using ButtonAttachment = APVTS::ButtonAttachment;
-  using ComboBoxAttachment = APVTS::ComboBoxAttachment;
 
   // attachments must be declared after the ui they are attached to
   // why? becuase JUCE's garbage collector destroys objects in the class from
@@ -77,7 +84,7 @@ private:
                                         ParameterID::envRelease.getParamID(),
                                         ampReleaseSlider.slider};
 
-  EnvelopeGroup ampEnvGroup{"Amp", ampAttackSlider, ampDecaySlider,
+  EnvelopeGroup ampEnvGroup{"Amp Envelope", ampAttackSlider, ampDecaySlider,
                             ampSustainSlider, ampReleaseSlider};
 
   VerticalSlider filterAttackSlider;
@@ -100,8 +107,9 @@ private:
       audioProcessor.apvts, ParameterID::filterRelease.getParamID(),
       filterReleaseSlider.slider};
 
-  EnvelopeGroup filterEnvGroup{"Filter", filterAttackSlider, filterDecaySlider,
-                               filterSustainSlider, filterReleaseSlider};
+  EnvelopeGroup filterEnvGroup{"Filter Envelope", filterAttackSlider,
+                               filterDecaySlider, filterSustainSlider,
+                               filterReleaseSlider};
 
   RotaryKnob filterFreqKnob;
   SliderAttachment filterFreqAttachment{audioProcessor.apvts,
@@ -128,7 +136,7 @@ private:
       audioProcessor.apvts, ParameterID::filterVelocity.getParamID(),
       filterVelocityKnob.slider};
 
-  FilterKnobGroup filterKnobGroup{"Filter Controls",  filterFreqKnob,
+  FilterKnobGroup filterKnobGroup{"Filter",           filterFreqKnob,
                                   filterVelocityKnob, filterResoKnob,
                                   filterEnvKnob,      filterLFOKnob};
 
@@ -147,8 +155,12 @@ private:
                                      ParameterID::oscFine.getParamID(),
                                      oscFineKnob.slider};
 
+  RotaryKnob noiseKnob;
+  SliderAttachment noiseAttachment{
+      audioProcessor.apvts, ParameterID::noise.getParamID(), noiseKnob.slider};
+
   OscillatorGroup oscillatorGroup{"Oscillator", oscMixKnob, oscTuneKnob,
-                                  oscFineKnob};
+                                  oscFineKnob, noiseKnob};
 
   RotaryKnob vibratoKnob;
   SliderAttachment vibratoAttachment{audioProcessor.apvts,
@@ -160,11 +172,12 @@ private:
                                      ParameterID::lfoRate.getParamID(),
                                      lfoRateKnob.slider};
 
-  VibratoGroup vibratoGroup{"Vibrato", lfoRateKnob, vibratoKnob};
+  VibratoGroup vibratoGroup{"LFO", lfoRateKnob, vibratoKnob};
 
-  juce::ComboBox glideModeBox;
-  ComboBoxAttachment glideModeAttachment{
-      audioProcessor.apvts, ParameterID::glideMode.getParamID(), glideModeBox};
+  // Segmented controls attach to their parameter themselves.
+  SegmentedControl glideModeSelector{
+      *audioProcessor.apvts.getParameter(ParameterID::glideMode.getParamID()),
+      {"Off", "Legato", "Always"}};
 
   RotaryKnob glideRateKnob;
   SliderAttachment glideRateAttachment{audioProcessor.apvts,
@@ -176,11 +189,27 @@ private:
                                        ParameterID::glideBend.getParamID(),
                                        glideBendKnob.slider};
 
-  GlideGroup glideGroup{"Glide", glideModeBox, glideRateKnob, glideBendKnob};
+  GlideGroup glideGroup{"Glide", glideModeSelector, glideRateKnob,
+                        glideBendKnob};
 
-  juce::TextButton polyModeButton;
+  // Header: presets, voice mode, octave, master tuning and level.
+  PresetDisplay presetDisplay{audioProcessor};
+
+  IOSSwitch polyModeSwitch{"POLY", "MONO"};
   ButtonAttachment polyModeAttachment{
-      audioProcessor.apvts, ParameterID::polyMode.getParamID(), polyModeButton};
+      audioProcessor.apvts, ParameterID::polyMode.getParamID(), polyModeSwitch};
+
+  SegmentedControl octaveSelector{
+      *audioProcessor.apvts.getParameter(ParameterID::octave.getParamID()),
+      {"-2", "-1", "0", "+1", "+2"}};
+
+  RotaryKnob tuningKnob;
+  SliderAttachment tuningAttachment{audioProcessor.apvts,
+                                    ParameterID::tuning.getParamID(),
+                                    tuningKnob.slider};
+
+  // Double-clicking a knob or fader returns it to its parameter's default.
+  void setDefaultValue(JX11Slider &control, const juce::ParameterID &id);
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JX11AudioProcessorEditor)
 };

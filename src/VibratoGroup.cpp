@@ -1,4 +1,5 @@
 #include "VibratoGroup.h"
+#include "Skin.h"
 #include "juce_graphics/juce_graphics.h"
 
 VibratoGroup::VibratoGroup(juce::String groupLabel, RotaryKnob &rate,
@@ -18,19 +19,13 @@ VibratoGroup::VibratoGroup(juce::String groupLabel, RotaryKnob &rate,
 VibratoGroup::~VibratoGroup() {}
 
 void VibratoGroup::resized() {
-  auto bounds = getLocalBounds();
-  group.setBounds(bounds);
+  group.setBounds(getLocalBounds());
 
-  static const int spacing = 18;
-  bounds.reduce(spacing * 1.25f, spacing * 1.25f);
-
-  // Calculate dimensions based on 2 columns and 1 rows
-  const int itemWidth = (bounds.getWidth() - 1 * spacing) / 2;
-  const int itemHeight = (bounds.getHeight() - spacing);
-
-  // Top Row (three knobs)
-  auto topRow = bounds.removeFromTop(itemHeight);
-  lfoRateKnob.setBounds(topRow.removeFromLeft(itemWidth));
-  topRow.removeFromLeft(spacing);
-  vibratoKnob.setBounds(topRow.removeFromLeft(itemWidth));
+  // Two knobs stacked in a narrow column.
+  static const int spacing = 8;
+  auto content = Skin::groupContent(getLocalBounds());
+  lfoRateKnob.setBounds(
+      content.removeFromTop((content.getHeight() - spacing) / 2));
+  content.removeFromTop(spacing);
+  vibratoKnob.setBounds(content);
 }

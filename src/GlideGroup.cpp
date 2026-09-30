@@ -1,20 +1,17 @@
 #include "GlideGroup.h"
+#include "Skin.h"
 #include "juce_graphics/juce_graphics.h"
 #include "juce_gui_basics/juce_gui_basics.h"
 
-GlideGroup::GlideGroup(juce::String groupLabel, juce::ComboBox &glideMode,
+GlideGroup::GlideGroup(juce::String groupLabel, SegmentedControl &glideMode,
                        RotaryKnob &glideRate, RotaryKnob &glideBend)
-    : label(groupLabel), glideModeBox(glideMode), glideRateKnob(glideRate),
+    : label(groupLabel), glideModeSelector(glideMode), glideRateKnob(glideRate),
       glideBendKnob(glideBend) {
   group.setText(label);
   group.setTextLabelPosition(juce::Justification::top);
   addAndMakeVisible(group);
 
-  glideModeBox.setText("Mode");
-  glideModeBox.addItem("Off", 1);
-  glideModeBox.addItem("Legato", 2);
-  glideModeBox.addItem("Always", 3);
-  addAndMakeVisible(glideModeBox);
+  addAndMakeVisible(glideModeSelector);
 
   glideRateKnob.label = "Rate";
   addAndMakeVisible(glideRateKnob);
@@ -26,33 +23,14 @@ GlideGroup::GlideGroup(juce::String groupLabel, juce::ComboBox &glideMode,
 GlideGroup::~GlideGroup() {}
 
 void GlideGroup::resized() {
-  auto bounds = getLocalBounds();
-  group.setBounds(bounds);
+  group.setBounds(getLocalBounds());
 
-  static const int spacing = 18;
-  bounds.reduce(spacing * 1.25f, spacing * 1.25f);
+  // Mode selector across the top, both knobs side by side beneath it.
+  auto content = Skin::groupContent(getLocalBounds());
+  glideModeSelector.setBounds(
+      content.removeFromTop(30).reduced(content.getWidth() / 12, 0));
+  content.removeFromTop(12);
 
-  // glideMode centered on bottom, both knobs on top
-  const int boxWidth = bounds.getWidth() / 3;
-  const int knobWidth = (bounds.getWidth() - spacing) / 2;
-
-  // 2:1 knob:button height
-  const int boxHeight = (bounds.getHeight() - spacing) / 3;
-  const int knobHeight = boxHeight * 2;
-
-  // glideRateKnob
-  bounds.setWidth(knobWidth);
-  bounds.setHeight(knobHeight);
-  glideRateKnob.setBounds(bounds);
-
-  // glideBendKnob
-  bounds.setX(bounds.getRight() + spacing);
-  glideBendKnob.setBounds(bounds);
-
-  // glideModeBox
-  bounds.setX(boxWidth + spacing * 1.25);
-  bounds.setY(bounds.getBottom() + spacing);
-  bounds.setHeight(boxHeight);
-  bounds.setWidth(boxWidth);
-  glideModeBox.setBounds(bounds);
+  glideRateKnob.setBounds(content.removeFromLeft(content.getWidth() / 2));
+  glideBendKnob.setBounds(content);
 }

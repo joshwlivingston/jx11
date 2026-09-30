@@ -15,8 +15,6 @@
 
 VerticalSlider::VerticalSlider() {
   slider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
-  slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 100, textBoxHeight);
+  slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, textBoxHeight);
   addAndMakeVisible(slider);
-
-  setBounds(0, 0, 75, 150);
 }

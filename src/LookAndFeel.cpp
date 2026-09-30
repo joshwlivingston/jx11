@@ -1,137 +1,130 @@
 #include "LookAndFeel.h"
-#include <cmath>
+#include "Skin.h"
+#include "Textures.h"
 
 LookAndFeel::LookAndFeel() {
-  setColour(juce::ResizableWindow::backgroundColourId, chassisColor);
-  setColour(juce::Label::textColourId, silkScreenWhite);
-  setColour(juce::Slider::textBoxTextColourId, silkScreenWhite);
+  setColour(juce::ResizableWindow::backgroundColourId, Skin::aluminiumDark);
+  setColour(juce::Label::textColourId, Skin::inkOnMetal);
 
-  // Deeply recessed text boxes
-  setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(5, 6, 7));
+  // Slider values are letterpress text on the metal, not boxes.
+  setColour(juce::Slider::textBoxTextColourId, Skin::inkOnMetal);
+  setColour(juce::Slider::textBoxBackgroundColourId,
+            juce::Colours::transparentBlack);
   setColour(juce::Slider::textBoxOutlineColourId,
-            juce::Colours::black.withAlpha(0.8f));
-  setColour(juce::Slider::trackColourId, amberGlow);
-}
+            juce::Colours::transparentBlack);
+  setColour(juce::Slider::textBoxHighlightColourId,
+            Skin::blue.withAlpha(0.35f));
 
-// Helper: True Soft Drop Shadows
-void LookAndFeel::drawSoftShadow(juce::Graphics &g,
-                                 juce::Rectangle<float> bounds, float offset,
-                                 float radius, float opacity) {
-  juce::Colour shadowColor = juce::Colours::black.withAlpha(opacity);
-  juce::Colour transparent = juce::Colours::black.withAlpha(0.0f);
+  // Double-clicking a value opens an iOS text field.
+  setColour(juce::Label::textWhenEditingColourId, juce::Colours::black);
+  setColour(juce::Label::backgroundWhenEditingColourId, juce::Colours::white);
+  setColour(juce::Label::outlineWhenEditingColourId, Skin::blue);
+  setColour(juce::TextEditor::textColourId, juce::Colours::black);
+  setColour(juce::TextEditor::highlightColourId, Skin::blue.withAlpha(0.35f));
+  setColour(juce::TextEditor::highlightedTextColourId, juce::Colours::black);
+  setColour(juce::CaretComponent::caretColourId, Skin::blue);
 
-  juce::Rectangle<float> shadowBounds =
-      bounds.translated(offset, offset * 1.5f).expanded(radius);
-  juce::ColourGradient shadowGrad(
-      shadowColor, shadowBounds.getCentreX(), shadowBounds.getCentreY(),
-      transparent, shadowBounds.getRight(), shadowBounds.getCentreY(), true);
-  g.setGradientFill(shadowGrad);
-  g.fillEllipse(shadowBounds);
+  setColour(juce::PopupMenu::backgroundColourId, juce::Colour(0xfff4f5f7));
+  setColour(juce::PopupMenu::textColourId, juce::Colour(0xff1f2226));
 }
 
 void LookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
                                    int height, float sliderPos,
                                    float rotaryStartAngle, float rotaryEndAngle,
                                    juce::Slider &slider) {
-  auto bounds = juce::Rectangle<int>(x, y, width, height).toFloat();
-  auto center = bounds.getCentre();
-  auto radius = juce::jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f - 8.0f;
-  auto toAngle =
+  const auto bounds = juce::Rectangle<int>(x, y, width, height).toFloat();
+  const float diameter = juce::jmin(bounds.getWidth(), bounds.getHeight(),
+                                    float(Skin::maxKnobDiameter));
+  const auto area =
+      juce::Rectangle<float>(diameter, diameter).withCentre(bounds.getCentre());
+  const auto centre = area.getCentre();
+
+  const float outer = diameter * 0.5f;
+  const float tickRadius = outer - juce::jmax(3.5f, outer * 0.1f);
+  const float arcRadius = outer * 0.8f;
+  const float skirtRadius = outer * 0.64f;
+  const float capRadius = skirtRadius * 0.72f;
+  const float angle =
       rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
 
-  // 1. THE SILKSCREENED TICK RING (Now with subtle embossing)
-  float ringRadius = radius + 6.0f;
+  // Knobs on the dark leather use light ink and a much dimmer lip.
+  const auto ink = slider.findColour(juce::Slider::textBoxTextColourId);
+  const float lip = ink.getPerceivedBrightness() > 0.5f ? 0.1f : 0.7f;
+
+  // 1. Scale ticks engraved into the surface.
   for (int i = 0; i <= 10; ++i) {
-    float angle =
-        rotaryStartAngle + (i / 10.0f) * (rotaryEndAngle - rotaryStartAngle);
-    float cosA = std::cos(angle - juce::MathConstants<float>::halfPi);
-    float sinA = std::sin(angle - juce::MathConstants<float>::halfPi);
+    const float a =
+        juce::jmap(float(i) / 10.0f, rotaryStartAngle, rotaryEndAngle);
+    const auto from = centre.getPointOnCircumference(tickRadius, a);
+    const auto to = centre.getPointOnCircumference(outer - 1.0f, a);
 
-    juce::Point<float> p1(center.x + ringRadius * cosA,
-                          center.y + ringRadius * sinA);
-    juce::Point<float> p2(center.x + (ringRadius + 4.0f) * cosA,
-                          center.y + (ringRadius + 4.0f) * sinA);
-
-    // Ink thickness shadow
-    g.setColour(juce::Colours::black.withAlpha(0.3f));
-    g.drawLine(p1.x, p1.y + 1.0f, p2.x, p2.y + 1.0f, 1.5f);
-    // Silkscreen ink
-    g.setColour(silkScreenWhite);
-    g.drawLine(p1.x, p1.y, p2.x, p2.y, 1.5f);
+    g.setColour(juce::Colours::white.withAlpha(lip));
+    g.drawLine(from.x, from.y + 1.0f, to.x, to.y + 1.0f, 1.2f);
+    g.setColour(ink.withAlpha(0.8f));
+    g.drawLine(from.x, from.y, to.x, to.y, 1.2f);
   }
 
-  // 2. THE VOLUMETRIC SOFT SHADOW
-  juce::Rectangle<float> knobBounds(center.x - radius, center.y - radius,
-                                    radius * 2.0f, radius * 2.0f);
-  drawSoftShadow(g, knobBounds, 3.0f, 4.0f, 0.6f);
+  // 2. The recessed groove the value arc runs in.
+  juce::Path track;
+  track.addCentredArc(centre.x, centre.y, arcRadius, arcRadius, 0.0f,
+                      rotaryStartAngle, rotaryEndAngle, true);
+  const juce::PathStrokeType groove(4.5f, juce::PathStrokeType::curved,
+                                    juce::PathStrokeType::rounded);
+  g.setColour(juce::Colours::white.withAlpha(lip));
+  g.strokePath(track, groove, juce::AffineTransform::translation(0.0f, 1.0f));
+  g.setColour(juce::Colours::black.withAlpha(0.3f + (0.7f - lip) * 0.4f));
+  g.strokePath(track, groove);
 
-  // Contact shadow (sharp, ambient occlusion)
-  g.setColour(juce::Colours::black.withAlpha(0.8f));
-  g.fillEllipse(knobBounds.translated(0.0f, 1.0f).reduced(1.0f));
+  // 3. The value, in UIKit blue. Bipolar parameters grow out from zero.
+  const bool bipolar = slider.getMinimum() < 0.0 && slider.getMaximum() > 0.0;
+  const float origin =
+      bipolar ? juce::jmap(float(slider.valueToProportionOfLength(0.0)),
+                           rotaryStartAngle, rotaryEndAngle)
+              : rotaryStartAngle;
 
-  // 3. BAKELITE SKIRT (The knurled fluting)
-  // We draw subtle ridges around the edge before the main dome
-  for (float a = 0; a < juce::MathConstants<float>::twoPi; a += 0.2f) {
-    float cx = center.x + (radius - 1.0f) * std::cos(a);
-    float cy = center.y + (radius - 1.0f) * std::sin(a);
-    g.setColour(knobBaseColor.darker(0.8f));
-    g.fillEllipse(cx - 2.0f, cy - 2.0f, 4.0f, 4.0f);
+  if (std::abs(angle - origin) > 0.01f) {
+    juce::Path value;
+    value.addCentredArc(centre.x, centre.y, arcRadius, arcRadius, 0.0f,
+                        juce::jmin(origin, angle), juce::jmax(origin, angle),
+                        true);
+
+    g.setColour(Skin::blue.withAlpha(0.22f));
+    g.strokePath(value, juce::PathStrokeType(7.0f, juce::PathStrokeType::curved,
+                                             juce::PathStrokeType::rounded));
+    g.setGradientFill({Skin::blueLight, centre.x, centre.y - arcRadius,
+                       Skin::blueDark, centre.x, centre.y + arcRadius, false});
+    g.strokePath(value, juce::PathStrokeType(3.0f, juce::PathStrokeType::curved,
+                                             juce::PathStrokeType::rounded));
   }
 
-  // 4. THE MAIN KNOB DOME (Subsurface depth)
-  juce::ColourGradient baseGrad(
-      knobBaseColor.brighter(0.1f), center.x, center.y - radius * 0.5f,
-      knobBaseColor.darker(0.6f), center.x, center.y + radius, false);
-  g.setGradientFill(baseGrad);
-  g.fillEllipse(knobBounds);
+  // 4. The knob itself, from the cache.
+  const float scale = g.getInternalContext().getPhysicalPixelScaleFactor();
+  const auto key = std::make_pair(juce::roundToInt(diameter * 8.0f),
+                                  juce::roundToInt(diameter * scale));
+  if (knobCache.size() > 32)
+    knobCache.clear(); // a live window resize walks through many sizes
 
-  // 5. THE SPHERICAL HIGHLIGHT (Light wraps around the plastic)
-  juce::ColourGradient specularGrad(
-      juce::Colours::white.withAlpha(0.15f), center.x - radius * 0.3f,
-      center.y - radius * 0.3f, juce::Colours::transparentWhite,
-      center.x + radius * 0.3f, center.y + radius * 0.3f, true);
-  g.setGradientFill(specularGrad);
-  g.fillEllipse(knobBounds.reduced(2.0f));
+  auto &body = knobCache[key];
+  if (!body.isValid())
+    body = Textures::knob(diameter, skirtRadius, capRadius, scale);
+  g.setOpacity(1.0f); // drawImage inherits the last colour's alpha
+  g.drawImage(body, area);
 
-  // 6. TOP CAP AND BEVEL
-  float capRadius = radius * 0.70f;
-  juce::Rectangle<float> capBounds(center.x - capRadius, center.y - capRadius,
-                                   capRadius * 2.0f, capRadius * 2.0f);
+  const auto capArea =
+      juce::Rectangle<float>(capRadius * 2.0f, capRadius * 2.0f)
+          .withCentre(centre);
+  if (slider.isMouseOverOrDragging()) {
+    g.setColour(juce::Colours::white.withAlpha(0.08f));
+    g.fillEllipse(capArea);
+  }
 
-  // Bevel rim highlight catching the top-left light
-  g.setColour(juce::Colours::white.withAlpha(0.1f));
-  g.drawEllipse(capBounds, 1.5f);
-  // Bevel rim shadow on the bottom right
-  g.setColour(juce::Colours::black.withAlpha(0.6f));
-  g.drawEllipse(capBounds.translated(0.5f, 0.5f), 1.5f);
-
-  juce::ColourGradient capGrad(knobBaseColor, capBounds.getX(),
-                               capBounds.getY(), knobBaseColor.darker(0.3f),
-                               capBounds.getRight(), capBounds.getBottom(),
-                               false);
-  g.setGradientFill(capGrad);
-  g.fillEllipse(capBounds);
-
-  // 7. PHYSICAL INDICATOR (A routed channel filled with bright enamel)
-  float arg = toAngle - juce::MathConstants<float>::halfPi;
-  float indLength = capRadius - 2.0f;
-
-  juce::Path indicator;
-  indicator.startNewSubPath(center);
-  indicator.lineTo(center.x + indLength * std::cos(arg),
-                   center.y + indLength * std::sin(arg));
-
-  // Routed shadow (Ambient occlusion inside the rut)
-  g.setColour(juce::Colours::black.withAlpha(0.9f));
-  g.strokePath(indicator,
-               juce::PathStrokeType(3.0f, juce::PathStrokeType::mitered,
-                                    juce::PathStrokeType::rounded));
-
-  // The wet enamel paint sitting inside the rut
-  g.setColour(silkScreenWhite);
-  g.strokePath(indicator,
-               juce::PathStrokeType(2.0f, juce::PathStrokeType::mitered,
-                                    juce::PathStrokeType::rounded));
+  // 5. The pointer: a groove cut into the spun cap.
+  const auto from = centre.getPointOnCircumference(capRadius * 0.25f, angle);
+  const auto to = centre.getPointOnCircumference(capRadius * 0.84f, angle);
+  g.setColour(juce::Colours::white.withAlpha(0.8f));
+  g.drawLine(from.x, from.y + 0.8f, to.x, to.y + 0.8f, 2.0f);
+  g.setColour(juce::Colour(0xff2b2f35));
+  g.drawLine(from.x, from.y, to.x, to.y, 2.2f);
 }
 
 void LookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width,
@@ -139,235 +132,260 @@ void LookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width,
                                    float minSliderPos, float maxSliderPos,
                                    const juce::Slider::SliderStyle style,
                                    juce::Slider &slider) {
-  if (slider.isBar())
+  if (slider.isBar() || !slider.isVertical()) {
+    LookAndFeel_V4::drawLinearSlider(g, x, y, width, height, sliderPos,
+                                     minSliderPos, maxSliderPos, style, slider);
     return;
-
-  bool isHorizontal = slider.isHorizontal();
-  auto bounds =
-      juce::Rectangle<float>((float)x, (float)y, (float)width, (float)height);
-
-  juce::Point<float> start(
-      isHorizontal ? bounds.getX() + 20 : bounds.getCentreX(),
-      isHorizontal ? bounds.getCentreY() : bounds.getBottom() - 20);
-  juce::Point<float> end(
-      isHorizontal ? bounds.getRight() - 20 : bounds.getCentreX(),
-      isHorizontal ? bounds.getCentreY() : bounds.getY() + 20);
-
-  // 1. THE ROUTED CHASSIS SLOT
-  juce::Path trackPath;
-  trackPath.startNewSubPath(start);
-  trackPath.lineTo(end);
-
-  // Milled aluminum lip highlight (bottom/right edge)
-  g.setColour(juce::Colours::white.withAlpha(0.12f));
-  g.strokePath(trackPath,
-               {(float)faderTrackWidth + 1.0f, juce::PathStrokeType::mitered,
-                juce::PathStrokeType::rounded},
-               juce::AffineTransform::translation(0.5f, 1.0f));
-
-  // Deep cast shadow inside the slot
-  g.setColour(juce::Colours::black.withAlpha(0.9f));
-  g.strokePath(trackPath,
-               {(float)faderTrackWidth, juce::PathStrokeType::mitered,
-                juce::PathStrokeType::rounded});
-
-  // 2. THE RUBBER DUST GUARD
-  // A textured, matte rubber flap that blocks light
-  g.setColour(juce::Colour(12, 13, 14));
-  g.strokePath(trackPath,
-               {(float)faderTrackWidth - 2.0f, juce::PathStrokeType::mitered,
-                juce::PathStrokeType::rounded});
-
-  // The slit where the two rubber flaps meet
-  g.setColour(juce::Colours::black);
-  g.strokePath(trackPath, {1.0f, juce::PathStrokeType::mitered,
-                           juce::PathStrokeType::butt});
-
-  // 3. THE MACHINED FADER CAP
-  float capW = isHorizontal ? 26.0f : 36.0f;
-  float capH = isHorizontal ? 36.0f : 26.0f;
-  juce::Point<float> thumbPos(isHorizontal ? sliderPos : bounds.getCentreX(),
-                              isHorizontal ? bounds.getCentreY() : sliderPos);
-  juce::Rectangle<float> capBounds(capW, capH);
-  capBounds.setCentre(thumbPos);
-
-  // Majestic, elevated soft shadow. Faders sit high.
-  drawSoftShadow(g, capBounds, 4.0f, 6.0f, 0.5f);
-  // Contact shadow
-  g.setColour(juce::Colours::black.withAlpha(0.6f));
-  g.fillRoundedRectangle(capBounds.translated(0.0f, 2.0f), 3.0f);
-
-  // ENVIRONMENTAL REFLECTION GRADIENT (The secret to skeuomorphic metal)
-  juce::Colour baseMetal = juce::Colour(210, 215, 220);
-  juce::Colour horizon = juce::Colour(150, 155, 160);
-
-  juce::ColourGradient metalGrad;
-  if (isHorizontal) {
-    metalGrad = juce::ColourGradient(
-        baseMetal, capBounds.getX(), capBounds.getY(), baseMetal.darker(0.2f),
-        capBounds.getX(), capBounds.getBottom(), false);
-    metalGrad.addColour(0.4f, baseMetal.brighter(0.2f)); // Upward reflection
-    metalGrad.addColour(0.5f, horizon);                  // Horizon line block
-    metalGrad.addColour(0.6f, horizon.brighter(0.1f));
-  } else {
-    metalGrad = juce::ColourGradient(
-        baseMetal, capBounds.getX(), capBounds.getY(), baseMetal.darker(0.2f),
-        capBounds.getRight(), capBounds.getY(), false);
-    metalGrad.addColour(0.4f, baseMetal.brighter(0.2f));
-    metalGrad.addColour(0.5f, horizon);
-    metalGrad.addColour(0.6f, horizon.brighter(0.1f));
   }
-  g.setGradientFill(metalGrad);
-  g.fillRoundedRectangle(capBounds, 3.0f);
 
-  // Milled top-edge highlight
-  g.setColour(juce::Colours::white.withAlpha(0.7f));
-  g.drawRoundedRectangle(capBounds.reduced(0.5f), 3.0f, 1.0f);
+  // A UISlider stood on end: an inset pill, blue below the thumb and pale
+  // grey above it, with the classic white glossy thumb. (minSliderPos and
+  // maxSliderPos belong to two-value sliders; the travel comes from the
+  // bounds, inset by the thumb radius just as Slider does.)
+  const float trackWidth = 9.0f;
+  const float radius = trackWidth * 0.5f;
+  const float indent = float(getSliderThumbRadius(slider));
+  const float centreX = float(x) + float(width) * 0.5f;
+  const float top = float(y) + indent;
+  const float bottom = float(y + height) - indent;
+  const auto track = juce::Rectangle<float>(
+      centreX - radius, top - radius, trackWidth, bottom - top + trackWidth);
 
-  // 4. THE TACTILE DIVOT
-  drawFaderDivot(g, capBounds, isHorizontal);
+  juce::Path trackPath;
+  trackPath.addRoundedRectangle(track, radius);
+
+  g.setColour(juce::Colours::white.withAlpha(0.75f));
+  g.fillRoundedRectangle(track.translated(0.0f, 1.0f), radius);
+
+  juce::ColourGradient empty(juce::Colour(0xffb3b5b8), track.getX(), 0.0f,
+                             juce::Colour(0xffd8dadd), track.getRight(), 0.0f,
+                             false);
+  empty.addColour(0.35, juce::Colour(0xfff6f6f7));
+  g.setGradientFill(empty);
+  g.fillPath(trackPath);
+
+  {
+    juce::Graphics::ScopedSaveState state(g);
+    juce::Path filled;
+    filled.addRectangle(track.withTop(sliderPos));
+    g.reduceClipRegion(filled);
+
+    juce::ColourGradient blue(Skin::blueDark, track.getX(), 0.0f, Skin::blue,
+                              track.getRight(), 0.0f, false);
+    blue.addColour(0.35, Skin::blueLight);
+    g.setGradientFill(blue);
+    g.fillPath(trackPath);
+  }
+
+  Textures::drawInnerShadow(g, trackPath, juce::Colours::black.withAlpha(0.45f),
+                            3, {0, 1});
+  g.setColour(juce::Colours::black.withAlpha(0.4f));
+  g.strokePath(trackPath, juce::PathStrokeType(1.0f));
+
+  const auto thumb =
+      juce::Rectangle<float>(faderThumbDiameter, faderThumbDiameter)
+          .withCentre({centreX, sliderPos});
+  juce::Path thumbPath;
+  thumbPath.addEllipse(thumb);
+  juce::DropShadow(juce::Colours::black.withAlpha(0.5f), 5, {0, 2})
+      .drawForPath(g, thumbPath);
+
+  const bool pressed = slider.isMouseButtonDown();
+  juce::ColourGradient fill(
+      pressed ? juce::Colour(0xffe2e2e2) : juce::Colours::white, centreX,
+      thumb.getY(),
+      pressed ? juce::Colour(0xffb4b4b4) : juce::Colour(0xffcfcfcf), centreX,
+      thumb.getBottom(), false);
+  fill.addColour(0.5,
+                 pressed ? juce::Colour(0xffd2d2d2) : juce::Colour(0xffeeeeee));
+  g.setGradientFill(fill);
+  g.fillPath(thumbPath);
+
+  g.setColour(juce::Colours::black.withAlpha(0.35f));
+  g.drawEllipse(thumb.reduced(0.5f), 1.0f);
+  g.setGradientFill({juce::Colours::white, centreX, thumb.getY(),
+                     juce::Colours::transparentWhite, centreX,
+                     thumb.getCentreY(), false});
+  g.drawEllipse(thumb.reduced(1.5f), 1.0f);
 }
 
-void LookAndFeel::drawFaderDivot(juce::Graphics &g,
-                                 juce::Rectangle<float> bounds,
-                                 bool isHorizontal) {
-  juce::Rectangle<float> divot =
-      bounds.reduced(isHorizontal ? 5.0f : 10.0f, isHorizontal ? 10.0f : 5.0f);
+int LookAndFeel::getSliderThumbRadius(juce::Slider &) {
+  return juce::roundToInt(faderThumbDiameter * 0.5f);
+}
 
-  // Concave lighting: the shadow is caught on the top-left inner rim, light
-  // catches the bottom-right inner rim.
-  juce::ColourGradient divotGrad(juce::Colours::black.withAlpha(0.6f),
-                                 divot.getX(), divot.getY(),
-                                 juce::Colours::white.withAlpha(0.4f),
-                                 divot.getRight(), divot.getBottom(), false);
-  g.setGradientFill(divotGrad);
-  g.fillRoundedRectangle(divot, 2.0f);
+juce::Slider::SliderLayout LookAndFeel::getSliderLayout(juce::Slider &slider) {
+  juce::Slider::SliderLayout layout;
+  auto bounds = slider.getLocalBounds();
 
-  // Inner rim shadow to give the carve absolute depth
-  g.setColour(juce::Colours::black.withAlpha(0.3f));
-  g.drawRoundedRectangle(divot, 2.0f, 1.0f);
-
-  // The painted reference line (thick, slightly wet looking ink)
-  g.setColour(juce::Colour(15, 15, 15));
-  if (isHorizontal) {
-    g.fillRect(divot.getCentreX() - 1.5f, divot.getY() + 2.0f, 3.0f,
-               divot.getHeight() - 4.0f);
-  } else {
-    g.fillRect(divot.getX() + 2.0f, divot.getCentreY() - 1.5f,
-               divot.getWidth() - 4.0f, 3.0f);
+  if (slider.getTextBoxPosition() == juce::Slider::TextBoxBelow) {
+    const int boxHeight = slider.getTextBoxHeight();
+    layout.textBoxBounds =
+        bounds.removeFromBottom(boxHeight).withSizeKeepingCentre(
+            juce::jmin(bounds.getWidth(), slider.getTextBoxWidth()), boxHeight);
   }
+
+  // Faders keep their thumb (and its shadow) clear of the text at both ends.
+  if (!slider.isRotary())
+    bounds.reduce(0, 6);
+
+  layout.sliderBounds = bounds;
+  return layout;
+}
+
+juce::Label *LookAndFeel::createSliderTextBox(juce::Slider &slider) {
+  auto *label = LookAndFeel_V4::createSliderTextBox(slider);
+  label->setFont(Skin::font(12.0f));
+  label->setColour(juce::Label::backgroundColourId,
+                   juce::Colours::transparentBlack);
+  label->setColour(juce::Label::outlineColourId,
+                   juce::Colours::transparentBlack);
+  return label;
+}
+
+void LookAndFeel::drawLabel(juce::Graphics &g, juce::Label &label) {
+  // While editing, the label's TextEditor draws the field and the text.
+  if (label.isBeingEdited())
+    return;
+
+  Textures::drawLetterpressText(
+      g, label.getText(), label.getLocalBounds().toFloat(),
+      label.getJustificationType(), label.findColour(juce::Label::textColourId),
+      label.getFont());
+}
+
+void LookAndFeel::fillTextEditorBackground(juce::Graphics &g, int width,
+                                           int height, juce::TextEditor &) {
+  const auto area =
+      juce::Rectangle<float>(float(width), float(height)).reduced(0.5f);
+  juce::Path field;
+  field.addRoundedRectangle(area, 4.0f);
+
+  g.setColour(juce::Colours::white);
+  g.fillPath(field);
+  Textures::drawInnerShadow(g, field, juce::Colours::black.withAlpha(0.35f), 2,
+                            {0, 1});
+}
+
+void LookAndFeel::drawTextEditorOutline(juce::Graphics &g, int width,
+                                        int height, juce::TextEditor &editor) {
+  const auto area =
+      juce::Rectangle<float>(float(width), float(height)).reduced(0.5f);
+  g.setColour(editor.hasKeyboardFocus(true)
+                  ? Skin::blue
+                  : juce::Colours::black.withAlpha(0.3f));
+  g.drawRoundedRectangle(area, 4.0f, 1.2f);
 }
 
 void LookAndFeel::drawGroupComponentOutline(juce::Graphics &g, int w, int h,
                                             const juce::String &text,
-                                            const juce::Justification &position,
-                                            juce::GroupComponent &group) {
-  auto panelBounds =
-      juce::Rectangle<float>(0.0f, 8.0f, (float)w, (float)h - 8.0f)
-          .reduced(4.0f);
+                                            const juce::Justification &,
+                                            juce::GroupComponent &) {
+  auto bounds = juce::Rectangle<float>(float(w), float(h));
+  const auto title = bounds.removeFromTop(float(Skin::groupTitleHeight));
+  const auto well = bounds.reduced(0.5f).withTrimmedBottom(1.0f);
+  const float radius = Skin::groupCornerRadius;
 
-  // 1. BOLTED SUB-PANEL WITH PROPER DROP SHADOW
-  drawSoftShadow(g, panelBounds, 2.0f, 6.0f, 0.4f);
+  juce::Path wellPath;
+  wellPath.addRoundedRectangle(well, radius);
 
-  // The chassis material
-  juce::Colour panelColor = chassisColor.brighter(0.08f);
-  g.setColour(panelColor);
-  g.fillRoundedRectangle(panelBounds, 6.0f);
+  // The lower lip of the cut catches the light from above.
+  {
+    juce::Graphics::ScopedSaveState state(g);
+    g.reduceClipRegion(
+        juce::Rectangle<int>(0, juce::roundToInt(well.getCentreY()), w, h));
+    juce::Path lip;
+    lip.addRoundedRectangle(well.translated(0.0f, 1.0f), radius);
+    lip.addRoundedRectangle(well, radius);
+    lip.setUsingNonZeroWinding(false);
+    g.setColour(juce::Colours::white.withAlpha(0.7f));
+    g.fillPath(lip);
+  }
 
-  // True milled edges (1px light top/left, 1px dark bottom/right)
-  g.setColour(juce::Colours::white.withAlpha(0.12f));
-  g.drawLine(panelBounds.getX() + 6.0f, panelBounds.getY(),
-             panelBounds.getRight() - 6.0f, panelBounds.getY(), 1.0f); // Top
-  g.drawLine(panelBounds.getX(), panelBounds.getY() + 6.0f, panelBounds.getX(),
-             panelBounds.getBottom() - 6.0f, 1.0f); // Left
+  g.setGradientFill({juce::Colours::black.withAlpha(0.1f), 0.0f, well.getY(),
+                     juce::Colours::black.withAlpha(0.03f), 0.0f,
+                     well.getBottom(), false});
+  g.fillPath(wellPath);
+  Textures::drawInnerShadow(g, wellPath, juce::Colours::black.withAlpha(0.4f),
+                            6, {0, 2});
+  g.setColour(juce::Colours::black.withAlpha(0.22f));
+  g.strokePath(wellPath, juce::PathStrokeType(1.0f));
 
-  g.setColour(juce::Colours::black.withAlpha(0.5f));
-  g.drawLine(panelBounds.getX() + 6.0f, panelBounds.getBottom(),
-             panelBounds.getRight() - 6.0f, panelBounds.getBottom(),
-             1.0f); // Bottom
-  g.drawLine(panelBounds.getRight(), panelBounds.getY() + 6.0f,
-             panelBounds.getRight(), panelBounds.getBottom() - 6.0f,
-             1.0f); // Right
+  // Section titles read like iOS grouped-table headers.
+  Textures::drawLetterpressText(
+      g, text.toUpperCase(),
+      title.withTrimmedLeft(8.0f).withTrimmedBottom(5.0f),
+      juce::Justification::bottomLeft, Skin::inkOnMetal,
+      Skin::font(12.0f).withExtraKerningFactor(0.12f));
+}
 
-  // 2. HARDWARE SCREWS (Slightly randomized rotation for authenticity)
-  float inset = 14.0f;
-  drawScrewHead(g, panelBounds.getX() + inset, panelBounds.getY() + inset,
-                0.45f);
-  drawScrewHead(g, panelBounds.getRight() - inset, panelBounds.getY() + inset,
-                1.12f);
-  drawScrewHead(g, panelBounds.getX() + inset, panelBounds.getBottom() - inset,
-                -0.65f);
-  drawScrewHead(g, panelBounds.getRight() - inset,
-                panelBounds.getBottom() - inset, 0.88f);
+void LookAndFeel::drawPopupMenuBackground(juce::Graphics &g, int width,
+                                          int height) {
+  g.setGradientFill({juce::Colour(0xfffcfcfd), 0.0f, 0.0f,
+                     juce::Colour(0xffe8eaee), 0.0f, float(height), false});
+  g.fillAll();
+  g.setColour(juce::Colours::black.withAlpha(0.3f));
+  g.drawRect(0, 0, width, height);
+}
 
-  // 3. SILKSCREENED HEADER TEXT WITH INK RELIEF
-  if (text.isNotEmpty()) {
-    g.setFont(getGroupComponentFont());
-    juce::Rectangle<float> textBounds(panelBounds.getX() + 24.0f,
-                                      panelBounds.getY() + 12.0f,
-                                      panelBounds.getWidth() - 48.0f, 20.0f);
+void LookAndFeel::drawPopupMenuItem(
+    juce::Graphics &g, const juce::Rectangle<int> &area, bool isSeparator,
+    bool isActive, bool isHighlighted, bool isTicked, bool,
+    const juce::String &text, const juce::String &, const juce::Drawable *,
+    const juce::Colour *) {
+  auto r = area.toFloat();
 
-    // Subtly raised ink shadow (opposite of an inset shadow)
-    g.setColour(juce::Colours::black.withAlpha(0.5f));
-    g.drawText(text, textBounds.translated(0.0f, 1.0f),
-               juce::Justification::topLeft, false);
+  if (isSeparator) {
+    g.setColour(juce::Colours::black.withAlpha(0.15f));
+    g.fillRect(r.withSizeKeepingCentre(r.getWidth() - 20.0f, 1.0f));
+    return;
+  }
 
-    g.setColour(silkScreenWhite);
-    g.drawText(text, textBounds, juce::Justification::topLeft, false);
+  const bool selected = isHighlighted && isActive;
+  if (selected) {
+    // The iOS 6 table-cell selection blue.
+    g.setGradientFill({juce::Colour(0xff058cf5), 0.0f, r.getY(),
+                       juce::Colour(0xff015fe6), 0.0f, r.getBottom(), false});
+    g.fillRect(r);
+  } else {
+    g.setColour(juce::Colours::black.withAlpha(0.08f));
+    g.fillRect(r.withTop(r.getBottom() - 1.0f).reduced(8.0f, 0.0f));
+  }
 
-    // Divider Line (grooved into the metal)
-    float lineY = textBounds.getBottom() + 2.0f;
-    g.setColour(juce::Colours::black.withAlpha(0.4f));
-    g.drawLine(textBounds.getX(), lineY, textBounds.getX() + 120.0f, lineY,
-               1.0f);
-    g.setColour(juce::Colours::white.withAlpha(0.1f));
-    g.drawLine(textBounds.getX(), lineY + 1.0f, textBounds.getX() + 120.0f,
-               lineY + 1.0f, 1.0f);
+  auto ink = selected ? juce::Colours::white : juce::Colour(0xff1f2226);
+  if (!isActive)
+    ink = ink.withAlpha(0.4f);
+
+  auto textArea = r.reduced(14.0f, 0.0f);
+  const auto tickArea = textArea.removeFromRight(22.0f);
+  Textures::drawLetterpressText(g, text, textArea,
+                                juce::Justification::centredLeft, ink,
+                                getPopupMenuFont());
+
+  if (isTicked) {
+    const auto c = tickArea.getCentre();
+    juce::Path check;
+    check.startNewSubPath(c.x - 6.0f, c.y);
+    check.lineTo(c.x - 2.0f, c.y + 4.5f);
+    check.lineTo(c.x + 6.0f, c.y - 5.0f);
+    g.setColour(selected ? juce::Colours::white : juce::Colour(0xff385487));
+    g.strokePath(check, juce::PathStrokeType(2.4f, juce::PathStrokeType::curved,
+                                             juce::PathStrokeType::rounded));
   }
 }
 
-void LookAndFeel::drawScrewHead(juce::Graphics &g, float x, float y,
-                                float rotation) {
-  float radius = 3.8f;
-  juce::Rectangle<float> bounds(x - radius, y - radius, radius * 2.0f,
-                                radius * 2.0f);
+juce::Font LookAndFeel::getPopupMenuFont() { return Skin::font(15.0f); }
 
-  // Drilled hole ambient occlusion (recessed into the panel)
-  g.setColour(juce::Colours::black.withAlpha(0.8f));
-  g.fillEllipse(bounds.expanded(1.0f).translated(0.0f, 1.0f));
+void LookAndFeel::getIdealPopupMenuItemSize(const juce::String &text,
+                                            bool isSeparator, int,
+                                            int &idealWidth, int &idealHeight) {
+  if (isSeparator) {
+    idealWidth = 50;
+    idealHeight = 9;
+    return;
+  }
 
-  // Stamped steel screw head (Metallic conical simulation)
-  juce::Colour base = juce::Colour(180, 185, 190);
-  juce::ColourGradient screwGrad(base.brighter(0.2f), bounds.getX(),
-                                 bounds.getY(), base.darker(0.5f),
-                                 bounds.getRight(), bounds.getBottom(), false);
-  g.setGradientFill(screwGrad);
-  g.fillEllipse(bounds);
-
-  // The Phillips cross slot
-  juce::Path cross;
-  float slotRadius = radius * 0.65f;
-  cross.addLineSegment(juce::Line<float>(x - slotRadius, y, x + slotRadius, y),
-                       1.4f);
-  cross.addLineSegment(juce::Line<float>(x, y - slotRadius, x, y + slotRadius),
-                       1.4f);
-  cross.applyTransform(juce::AffineTransform::rotation(rotation, x, y));
-
-  // To make the slot look punched, it needs a shadow on the leading edge and a
-  // highlight on the trailing edge. Instead of drawing a flat stroke, we stroke
-  // it twice, offset.
-  g.setColour(juce::Colours::white.withAlpha(0.4f));
-  g.strokePath(cross, juce::PathStrokeType(1.0f),
-               juce::AffineTransform::translation(0.5f, 0.5f));
-
-  g.setColour(juce::Colours::black.withAlpha(0.9f));
-  g.strokePath(cross, juce::PathStrokeType(1.4f));
-}
-
-int LookAndFeel::getSliderThumbRadius(juce::Slider &slider) { return 18; }
-
-juce::Font LookAndFeel::getGroupComponentFont() {
-  // Tracking/kerning matters in hardware!
-  return juce::Font{juce::FontOptions{13.0f, juce::Font::bold}}
-      .withExtraKerningFactor(0.05f);
+  idealWidth = juce::roundToInt(juce::GlyphArrangement::getStringWidth(
+                   getPopupMenuFont(), text)) +
+               60;
+  idealHeight = 30;
 }

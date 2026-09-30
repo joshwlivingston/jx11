@@ -7,7 +7,7 @@
 class OscillatorGroup : public juce::Component {
 public:
   OscillatorGroup(juce::String groupLabel, RotaryKnob &mix, RotaryKnob &tune,
-                  RotaryKnob &fine);
+                  RotaryKnob &fine, RotaryKnob &noise);
   ~OscillatorGroup() override;
 
   void resized() override;
@@ -16,7 +16,7 @@ public:
 
 private:
   juce::GroupComponent group;
-  RotaryKnob &mixKnob, &tuneKnob, &fineKnob;
+  RotaryKnob &mixKnob, &tuneKnob, &fineKnob, &noiseKnob;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OscillatorGroup)
 };

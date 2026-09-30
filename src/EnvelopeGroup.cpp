@@ -1,4 +1,5 @@
 #include "EnvelopeGroup.h"
+#include "Skin.h"
 #include "juce_graphics/juce_graphics.h"
 
 EnvelopeGroup::EnvelopeGroup(juce::String groupLabel, JX11Slider &attack,
@@ -26,20 +27,14 @@ EnvelopeGroup::EnvelopeGroup(juce::String groupLabel, JX11Slider &attack,
 EnvelopeGroup::~EnvelopeGroup() {}
 
 void EnvelopeGroup::resized() {
-  auto bounds = getLocalBounds();
-  group.setBounds(bounds);
-  static const int spacing = 20;
+  group.setBounds(getLocalBounds());
 
-  bounds.reduce(spacing * 1.25f, spacing * 1.25f);
-  bounds.setWidth((bounds.getWidth() - 3 * spacing) / 4);
-  attackSlider.setBounds(bounds);
+  // Four equal columns of faders.
+  auto content = Skin::groupContent(getLocalBounds());
+  const int columnWidth = content.getWidth() / 4;
 
-  bounds.setX(bounds.getRight() + spacing);
-  decaySlider.setBounds(bounds);
-
-  bounds.setX(bounds.getRight() + spacing);
-  sustainSlider.setBounds(bounds);
-
-  bounds.setX(bounds.getRight() + spacing);
-  releaseSlider.setBounds(bounds);
+  attackSlider.setBounds(content.removeFromLeft(columnWidth));
+  decaySlider.setBounds(content.removeFromLeft(columnWidth));
+  sustainSlider.setBounds(content.removeFromLeft(columnWidth));
+  releaseSlider.setBounds(content);
 }

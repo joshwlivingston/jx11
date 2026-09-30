@@ -1,4 +1,5 @@
 #include "FilterKnobGroup.h"
+#include "Skin.h"
 #include "juce_graphics/juce_graphics.h"
 
 FilterKnobGroup::FilterKnobGroup(juce::String groupLabel, RotaryKnob &freq,
@@ -29,31 +30,15 @@ FilterKnobGroup::FilterKnobGroup(juce::String groupLabel, RotaryKnob &freq,
 FilterKnobGroup::~FilterKnobGroup() {}
 
 void FilterKnobGroup::resized() {
-  auto bounds = getLocalBounds();
-  group.setBounds(bounds);
+  group.setBounds(getLocalBounds());
 
-  static const int spacing = 18;
-  bounds.reduce(spacing * 1.25f, spacing * 1.25f);
+  // One row of five knobs, in signal-flow order.
+  auto content = Skin::groupContent(getLocalBounds());
+  const int columnWidth = content.getWidth() / 5;
 
-  // Calculate dimensions based on 3 columns and 2 rows
-  const int itemWidth = (bounds.getWidth() - 2 * spacing) / 3;
-  const int itemHeight = (bounds.getHeight() - spacing) / 2;
-
-  // Top Row (three knobs)
-  auto topRow = bounds.removeFromTop(itemHeight);
-  freqKnob.setBounds(topRow.removeFromLeft(itemWidth));
-  topRow.removeFromLeft(spacing);
-  resoKnob.setBounds(topRow.removeFromLeft(itemWidth));
-  topRow.removeFromLeft(spacing);
-  veloKnob.setBounds(topRow.removeFromLeft(itemWidth));
-
-  // Bottom Row (two knobs)
-  // Adds margin to left and right edges of bottom row - preserves same spacing
-  // between knobs
-  auto bottomRow = bounds.removeFromTop(itemHeight + spacing);
-  const int bottomRowOffset = (itemWidth / 2) + (spacing / 2);
-  bottomRow.removeFromLeft(bottomRowOffset);
-  envKnob.setBounds(bottomRow.removeFromLeft(itemWidth));
-  bottomRow.removeFromLeft(spacing);
-  lfoKnob.setBounds(bottomRow.removeFromLeft(itemWidth));
+  freqKnob.setBounds(content.removeFromLeft(columnWidth));
+  resoKnob.setBounds(content.removeFromLeft(columnWidth));
+  envKnob.setBounds(content.removeFromLeft(columnWidth));
+  lfoKnob.setBounds(content.removeFromLeft(columnWidth));
+  veloKnob.setBounds(content);
 }

@@ -1,4 +1,6 @@
 #include "Slider.h"
+#include "Skin.h"
+#include "Textures.h"
 #include "juce_graphics/juce_graphics.h"
 #include "juce_gui_basics/juce_gui_basics.h"
 
@@ -8,26 +10,34 @@ JX11Slider::~JX11Slider() {}
 
 void JX11Slider::resized() {
   auto bounds = getLocalBounds();
-  slider.setBounds(0, labelHeight, bounds.getWidth(),
-                   bounds.getHeight() - labelHeight);
+
+  // Knobs stop growing at a fixed size; keep the name, knob and value
+  // together as one block, centred in whatever room is left.
+  if (slider.isRotary()) {
+    const int knobSize =
+        juce::jmin(bounds.getWidth(), Skin::maxKnobDiameter,
+                   bounds.getHeight() - labelHeight - textBoxHeight);
+    bounds = bounds.withSizeKeepingCentre(
+        bounds.getWidth(), labelHeight + knobSize + textBoxHeight);
+  }
+
+  labelArea = bounds.removeFromTop(labelHeight);
+  slider.setBounds(bounds);
 }
 
 void JX11Slider::paint(juce::Graphics &g) {
-  g.fillAll(
-      getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-  g.setFont(15.0f);
-  g.setColour(getLookAndFeel().findColour(juce::Label::textColourId));
-  auto bounds = getLocalBounds();
-  g.drawText(label, juce::Rectangle<int>{0, 0, bounds.getWidth(), labelHeight},
-             juce::Justification::centred);
+  // Transparent: the control sits directly on whatever surface is behind it.
+  Textures::drawLetterpressText(
+      g, label.toUpperCase(), labelArea.toFloat(), juce::Justification::centred,
+      slider.findColour(juce::Slider::textBoxTextColourId),
+      Skin::font(11.0f).withExtraKerningFactor(0.08f));
+}
 
-  // rectangle outlines for debugging
-  // g.setColour(juce::Colours::red);
-  // g.drawRect(getLocalBounds(), 1);
+void JX11Slider::setDefaultValue(double value) {
+  slider.setDoubleClickReturnValue(true, value);
+}
 
-  // g.setColour(juce::Colours::yellow);
-  // g.drawRect(0, labelHeight, bounds.getWidth(),
-  //            bounds.getHeight() - labelHeight - textBoxHeight, 1);
-
-  // g.setColour(juce::Colours::green);
+void JX11Slider::setInkColour(juce::Colour ink) {
+  slider.setColour(juce::Slider::textBoxTextColourId, ink);
+  repaint();
 }
