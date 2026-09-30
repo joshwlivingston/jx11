@@ -1,106 +1,137 @@
 #include "LookAndFeel.h"
-#include "juce_core/juce_core.h"
-#include "juce_graphics/juce_graphics.h"
-#include "juce_gui_basics/juce_gui_basics.h"
 #include <cmath>
 
 LookAndFeel::LookAndFeel() {
-  // Set all colors derived from bacgkround color
-  static const juce::Colour textColor = backgroundColor.getLightness() < 0.5
-                                            ? juce::Colour(255, 255, 255)
-                                            : juce::Colour(0, 0, 0);
-  static const juce::Colour textColorInverse =
-      backgroundColor.getLightness() > 0.5 ? juce::Colour(255, 255, 255)
-                                           : juce::Colour(0, 0, 0);
-  static const juce::Colour activeColor =
-      adjustLightness(backgroundColor, 2.0f);
-  static const juce::Colour trackBackground =
-      gray(adjustLightness(backgroundColor, 2.0f), 3.0f);
-  static const juce::Colour offColor = gray(backgroundColor, 3.0f);
-  static const juce::Colour outlineColor = makeOutline(backgroundColor, 2.0f);
+  setColour(juce::ResizableWindow::backgroundColourId, chassisColor);
+  setColour(juce::Label::textColourId, silkScreenWhite);
+  setColour(juce::Slider::textBoxTextColourId, silkScreenWhite);
 
-  // Set background color
-  setColour(juce::ResizableWindow::backgroundColourId, backgroundColor);
+  // Deeply recessed text boxes
+  setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(5, 6, 7));
+  setColour(juce::Slider::textBoxOutlineColourId,
+            juce::Colours::black.withAlpha(0.8f));
+  setColour(juce::Slider::trackColourId, amberGlow);
+}
 
-  // Shared by RotaryKnob and Vertical Slider
-  setColour(juce::Slider::thumbColourId, textColor);
-  setColour(juce::Label::textColourId, textColor);
-  setColour(juce::Slider::textBoxTextColourId, textColor);
-  setColour(juce::TextEditor::textColourId, textColor);
-  setColour(juce::Slider::textBoxOutlineColourId, outlineColor);
+// Helper: True Soft Drop Shadows
+void LookAndFeel::drawSoftShadow(juce::Graphics &g,
+                                 juce::Rectangle<float> bounds, float offset,
+                                 float radius, float opacity) {
+  juce::Colour shadowColor = juce::Colours::black.withAlpha(opacity);
+  juce::Colour transparent = juce::Colours::black.withAlpha(0.0f);
 
-  // RotaryKnob colors
-  setColour(juce::Slider::rotarySliderOutlineColourId, offColor);
-  setColour(juce::Slider::rotarySliderFillColourId, activeColor);
-
-  // VerticalSlider colors
-  setColour(juce::Slider::trackColourId, activeColor);
-  setColour(juce::Slider::backgroundColourId, offColor);
-
-  // Adjust colors on buttons to make on/off  (or different values) better
-  // differentiated
-  setColour(juce::TextButton::buttonColourId, offColor);
-  setColour(juce::TextButton::buttonOnColourId, activeColor);
-  setColour(juce::TextButton::textColourOffId, textColor);
-  setColour(juce::TextButton::textColourOnId, textColorInverse);
-  setColour(juce::ComboBox::outlineColourId, outlineColor);
-
-  // Group Component colors
-  setColour(juce::GroupComponent::outlineColourId, outlineColor);
-  setColour(juce::GroupComponent::textColourId, textColor);
+  juce::Rectangle<float> shadowBounds =
+      bounds.translated(offset, offset * 1.5f).expanded(radius);
+  juce::ColourGradient shadowGrad(
+      shadowColor, shadowBounds.getCentreX(), shadowBounds.getCentreY(),
+      transparent, shadowBounds.getRight(), shadowBounds.getCentreY(), true);
+  g.setGradientFill(shadowGrad);
+  g.fillEllipse(shadowBounds);
 }
 
 void LookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
                                    int height, float sliderPos,
                                    float rotaryStartAngle, float rotaryEndAngle,
                                    juce::Slider &slider) {
-  auto outlineColor =
-      slider.findColour(juce::Slider::rotarySliderOutlineColourId);
-
-  auto fillColor = slider.findColour(juce::Slider::rotarySliderFillColourId);
-  auto dialColor = slider.findColour(juce::Slider::thumbColourId);
-
-  auto bounds = juce::Rectangle<int>(x, y, width, width)
-                    .toFloat()
-                    .withTrimmedLeft(16.0f)
-                    .withTrimmedRight(16.0f)
-                    .withTrimmedTop(0.0f)
-                    .withTrimmedBottom(8.0f);
-
-  auto radius = bounds.getWidth() / 2.0f;
+  auto bounds = juce::Rectangle<int>(x, y, width, height).toFloat();
+  auto center = bounds.getCentre();
+  auto radius = juce::jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f - 8.0f;
   auto toAngle =
       rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
-  auto lineW = 6.0f;
-  auto arcRadius = radius - lineW / 2.0f;
 
-  auto arg = toAngle - juce::MathConstants<float>::halfPi;
-  auto dialW = 3.0f;
-  auto dialRadius = arcRadius - 6.0f;
+  // 1. THE SILKSCREENED TICK RING (Now with subtle embossing)
+  float ringRadius = radius + 6.0f;
+  for (int i = 0; i <= 10; ++i) {
+    float angle =
+        rotaryStartAngle + (i / 10.0f) * (rotaryEndAngle - rotaryStartAngle);
+    float cosA = std::cos(angle - juce::MathConstants<float>::halfPi);
+    float sinA = std::sin(angle - juce::MathConstants<float>::halfPi);
 
-  auto center = bounds.getCentre();
-  auto strokeType = juce::PathStrokeType(lineW, juce::PathStrokeType::curved,
-                                         juce::PathStrokeType::butt);
+    juce::Point<float> p1(center.x + ringRadius * cosA,
+                          center.y + ringRadius * sinA);
+    juce::Point<float> p2(center.x + (ringRadius + 4.0f) * cosA,
+                          center.y + (ringRadius + 4.0f) * sinA);
 
-  juce::Path backgroundArc;
-  backgroundArc.addCentredArc(center.x, center.y, arcRadius, arcRadius, 0.0f,
-                              rotaryStartAngle, rotaryEndAngle, true);
-  g.setColour(outlineColor);
-  g.strokePath(backgroundArc, strokeType);
-
-  if (slider.isEnabled()) {
-    juce::Path valueArc;
-    valueArc.addCentredArc(center.x, center.y, arcRadius, arcRadius, 0.0f,
-                           rotaryStartAngle, toAngle, true);
-    g.setColour(fillColor);
-    g.strokePath(valueArc, strokeType);
+    // Ink thickness shadow
+    g.setColour(juce::Colours::black.withAlpha(0.3f));
+    g.drawLine(p1.x, p1.y + 1.0f, p2.x, p2.y + 1.0f, 1.5f);
+    // Silkscreen ink
+    g.setColour(silkScreenWhite);
+    g.drawLine(p1.x, p1.y, p2.x, p2.y, 1.5f);
   }
 
-  juce::Point<float> thumbPoint(center.x + dialRadius * std::cos(arg),
-                                center.y + dialRadius * std::sin(arg));
-  g.setColour(dialColor);
-  g.drawLine(center.x, center.y, thumbPoint.x, thumbPoint.y, dialW);
-  g.fillEllipse(juce::Rectangle<float>(dialW, dialW).withCentre(thumbPoint));
-  g.fillEllipse(juce::Rectangle<float>(dialW, dialW).withCentre(center));
+  // 2. THE VOLUMETRIC SOFT SHADOW
+  juce::Rectangle<float> knobBounds(center.x - radius, center.y - radius,
+                                    radius * 2.0f, radius * 2.0f);
+  drawSoftShadow(g, knobBounds, 3.0f, 4.0f, 0.6f);
+
+  // Contact shadow (sharp, ambient occlusion)
+  g.setColour(juce::Colours::black.withAlpha(0.8f));
+  g.fillEllipse(knobBounds.translated(0.0f, 1.0f).reduced(1.0f));
+
+  // 3. BAKELITE SKIRT (The knurled fluting)
+  // We draw subtle ridges around the edge before the main dome
+  for (float a = 0; a < juce::MathConstants<float>::twoPi; a += 0.2f) {
+    float cx = center.x + (radius - 1.0f) * std::cos(a);
+    float cy = center.y + (radius - 1.0f) * std::sin(a);
+    g.setColour(knobBaseColor.darker(0.8f));
+    g.fillEllipse(cx - 2.0f, cy - 2.0f, 4.0f, 4.0f);
+  }
+
+  // 4. THE MAIN KNOB DOME (Subsurface depth)
+  juce::ColourGradient baseGrad(
+      knobBaseColor.brighter(0.1f), center.x, center.y - radius * 0.5f,
+      knobBaseColor.darker(0.6f), center.x, center.y + radius, false);
+  g.setGradientFill(baseGrad);
+  g.fillEllipse(knobBounds);
+
+  // 5. THE SPHERICAL HIGHLIGHT (Light wraps around the plastic)
+  juce::ColourGradient specularGrad(
+      juce::Colours::white.withAlpha(0.15f), center.x - radius * 0.3f,
+      center.y - radius * 0.3f, juce::Colours::transparentWhite,
+      center.x + radius * 0.3f, center.y + radius * 0.3f, true);
+  g.setGradientFill(specularGrad);
+  g.fillEllipse(knobBounds.reduced(2.0f));
+
+  // 6. TOP CAP AND BEVEL
+  float capRadius = radius * 0.70f;
+  juce::Rectangle<float> capBounds(center.x - capRadius, center.y - capRadius,
+                                   capRadius * 2.0f, capRadius * 2.0f);
+
+  // Bevel rim highlight catching the top-left light
+  g.setColour(juce::Colours::white.withAlpha(0.1f));
+  g.drawEllipse(capBounds, 1.5f);
+  // Bevel rim shadow on the bottom right
+  g.setColour(juce::Colours::black.withAlpha(0.6f));
+  g.drawEllipse(capBounds.translated(0.5f, 0.5f), 1.5f);
+
+  juce::ColourGradient capGrad(knobBaseColor, capBounds.getX(),
+                               capBounds.getY(), knobBaseColor.darker(0.3f),
+                               capBounds.getRight(), capBounds.getBottom(),
+                               false);
+  g.setGradientFill(capGrad);
+  g.fillEllipse(capBounds);
+
+  // 7. PHYSICAL INDICATOR (A routed channel filled with bright enamel)
+  float arg = toAngle - juce::MathConstants<float>::halfPi;
+  float indLength = capRadius - 2.0f;
+
+  juce::Path indicator;
+  indicator.startNewSubPath(center);
+  indicator.lineTo(center.x + indLength * std::cos(arg),
+                   center.y + indLength * std::sin(arg));
+
+  // Routed shadow (Ambient occlusion inside the rut)
+  g.setColour(juce::Colours::black.withAlpha(0.9f));
+  g.strokePath(indicator,
+               juce::PathStrokeType(3.0f, juce::PathStrokeType::mitered,
+                                    juce::PathStrokeType::rounded));
+
+  // The wet enamel paint sitting inside the rut
+  g.setColour(silkScreenWhite);
+  g.strokePath(indicator,
+               juce::PathStrokeType(2.0f, juce::PathStrokeType::mitered,
+                                    juce::PathStrokeType::rounded));
 }
 
 void LookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width,
@@ -108,146 +139,235 @@ void LookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width,
                                    float minSliderPos, float maxSliderPos,
                                    const juce::Slider::SliderStyle style,
                                    juce::Slider &slider) {
-  if (slider.isBar()) {
-    g.setColour(slider.findColour(juce::Slider::trackColourId));
-    g.fillRect(
-        slider.isHorizontal()
-            ? juce::Rectangle<float>(static_cast<float>(x), (float)y + 0.5f,
-                                     sliderPos - (float)x, (float)height - 1.0f)
-            : juce::Rectangle<float>((float)x + 0.5f, sliderPos,
-                                     (float)width - 1.0f,
-                                     (float)y + ((float)height - sliderPos)));
+  if (slider.isBar())
+    return;
 
-    drawLinearSliderOutline(g, x, y, width, height, style, slider);
+  bool isHorizontal = slider.isHorizontal();
+  auto bounds =
+      juce::Rectangle<float>((float)x, (float)y, (float)width, (float)height);
+
+  juce::Point<float> start(
+      isHorizontal ? bounds.getX() + 20 : bounds.getCentreX(),
+      isHorizontal ? bounds.getCentreY() : bounds.getBottom() - 20);
+  juce::Point<float> end(
+      isHorizontal ? bounds.getRight() - 20 : bounds.getCentreX(),
+      isHorizontal ? bounds.getCentreY() : bounds.getY() + 20);
+
+  // 1. THE ROUTED CHASSIS SLOT
+  juce::Path trackPath;
+  trackPath.startNewSubPath(start);
+  trackPath.lineTo(end);
+
+  // Milled aluminum lip highlight (bottom/right edge)
+  g.setColour(juce::Colours::white.withAlpha(0.12f));
+  g.strokePath(trackPath,
+               {(float)faderTrackWidth + 1.0f, juce::PathStrokeType::mitered,
+                juce::PathStrokeType::rounded},
+               juce::AffineTransform::translation(0.5f, 1.0f));
+
+  // Deep cast shadow inside the slot
+  g.setColour(juce::Colours::black.withAlpha(0.9f));
+  g.strokePath(trackPath,
+               {(float)faderTrackWidth, juce::PathStrokeType::mitered,
+                juce::PathStrokeType::rounded});
+
+  // 2. THE RUBBER DUST GUARD
+  // A textured, matte rubber flap that blocks light
+  g.setColour(juce::Colour(12, 13, 14));
+  g.strokePath(trackPath,
+               {(float)faderTrackWidth - 2.0f, juce::PathStrokeType::mitered,
+                juce::PathStrokeType::rounded});
+
+  // The slit where the two rubber flaps meet
+  g.setColour(juce::Colours::black);
+  g.strokePath(trackPath, {1.0f, juce::PathStrokeType::mitered,
+                           juce::PathStrokeType::butt});
+
+  // 3. THE MACHINED FADER CAP
+  float capW = isHorizontal ? 26.0f : 36.0f;
+  float capH = isHorizontal ? 36.0f : 26.0f;
+  juce::Point<float> thumbPos(isHorizontal ? sliderPos : bounds.getCentreX(),
+                              isHorizontal ? bounds.getCentreY() : sliderPos);
+  juce::Rectangle<float> capBounds(capW, capH);
+  capBounds.setCentre(thumbPos);
+
+  // Majestic, elevated soft shadow. Faders sit high.
+  drawSoftShadow(g, capBounds, 4.0f, 6.0f, 0.5f);
+  // Contact shadow
+  g.setColour(juce::Colours::black.withAlpha(0.6f));
+  g.fillRoundedRectangle(capBounds.translated(0.0f, 2.0f), 3.0f);
+
+  // ENVIRONMENTAL REFLECTION GRADIENT (The secret to skeuomorphic metal)
+  juce::Colour baseMetal = juce::Colour(210, 215, 220);
+  juce::Colour horizon = juce::Colour(150, 155, 160);
+
+  juce::ColourGradient metalGrad;
+  if (isHorizontal) {
+    metalGrad = juce::ColourGradient(
+        baseMetal, capBounds.getX(), capBounds.getY(), baseMetal.darker(0.2f),
+        capBounds.getX(), capBounds.getBottom(), false);
+    metalGrad.addColour(0.4f, baseMetal.brighter(0.2f)); // Upward reflection
+    metalGrad.addColour(0.5f, horizon);                  // Horizon line block
+    metalGrad.addColour(0.6f, horizon.brighter(0.1f));
   } else {
-    auto isTwoVal = (style == juce::Slider::SliderStyle::TwoValueVertical ||
-                     style == juce::Slider::SliderStyle::TwoValueHorizontal);
-    auto isThreeVal =
-        (style == juce::Slider::SliderStyle::ThreeValueVertical ||
-         style == juce::Slider::SliderStyle::ThreeValueHorizontal);
+    metalGrad = juce::ColourGradient(
+        baseMetal, capBounds.getX(), capBounds.getY(), baseMetal.darker(0.2f),
+        capBounds.getRight(), capBounds.getY(), false);
+    metalGrad.addColour(0.4f, baseMetal.brighter(0.2f));
+    metalGrad.addColour(0.5f, horizon);
+    metalGrad.addColour(0.6f, horizon.brighter(0.1f));
+  }
+  g.setGradientFill(metalGrad);
+  g.fillRoundedRectangle(capBounds, 3.0f);
 
-    auto trackWidth = juce::jmin((float)sliderTrackWidth,
-                                 slider.isHorizontal() ? (float)height * 0.25f
-                                                       : (float)width * 0.25f);
+  // Milled top-edge highlight
+  g.setColour(juce::Colours::white.withAlpha(0.7f));
+  g.drawRoundedRectangle(capBounds.reduced(0.5f), 3.0f, 1.0f);
 
-    juce::Point<float> startPoint(
-        slider.isHorizontal() ? (float)x : (float)x + (float)width * 0.5f,
-        slider.isHorizontal() ? (float)y + (float)height * 0.5f
-                              : (float)(height + y));
+  // 4. THE TACTILE DIVOT
+  drawFaderDivot(g, capBounds, isHorizontal);
+}
 
-    juce::Point<float> endPoint(
-        slider.isHorizontal() ? (float)(width + x) : startPoint.x,
-        slider.isHorizontal() ? startPoint.y : (float)y);
+void LookAndFeel::drawFaderDivot(juce::Graphics &g,
+                                 juce::Rectangle<float> bounds,
+                                 bool isHorizontal) {
+  juce::Rectangle<float> divot =
+      bounds.reduced(isHorizontal ? 5.0f : 10.0f, isHorizontal ? 10.0f : 5.0f);
 
-    juce::Path backgroundTrack;
-    backgroundTrack.startNewSubPath(startPoint);
-    backgroundTrack.lineTo(endPoint);
-    g.setColour(slider.findColour(juce::Slider::backgroundColourId));
-    g.strokePath(backgroundTrack, {trackWidth, juce::PathStrokeType::curved,
-                                   juce::PathStrokeType::rounded});
+  // Concave lighting: the shadow is caught on the top-left inner rim, light
+  // catches the bottom-right inner rim.
+  juce::ColourGradient divotGrad(juce::Colours::black.withAlpha(0.6f),
+                                 divot.getX(), divot.getY(),
+                                 juce::Colours::white.withAlpha(0.4f),
+                                 divot.getRight(), divot.getBottom(), false);
+  g.setGradientFill(divotGrad);
+  g.fillRoundedRectangle(divot, 2.0f);
 
-    juce::Path valueTrack;
-    juce::Point<float> minPoint, maxPoint, thumbPoint;
+  // Inner rim shadow to give the carve absolute depth
+  g.setColour(juce::Colours::black.withAlpha(0.3f));
+  g.drawRoundedRectangle(divot, 2.0f, 1.0f);
 
-    if (isTwoVal || isThreeVal) {
-      minPoint = {slider.isHorizontal() ? minSliderPos : (float)width * 0.5f,
-                  slider.isHorizontal() ? (float)height * 0.5f : minSliderPos};
-
-      if (isThreeVal)
-        thumbPoint = {slider.isHorizontal() ? sliderPos : (float)width * 0.5f,
-                      slider.isHorizontal() ? (float)height * 0.5f : sliderPos};
-
-      maxPoint = {slider.isHorizontal() ? maxSliderPos : (float)width * 0.5f,
-                  slider.isHorizontal() ? (float)height * 0.5f : maxSliderPos};
-    } else {
-      auto kx =
-          slider.isHorizontal() ? sliderPos : ((float)x + (float)width * 0.5f);
-      auto ky =
-          slider.isHorizontal() ? ((float)y + (float)height * 0.5f) : sliderPos;
-
-      minPoint = startPoint;
-      maxPoint = {kx, ky};
-    }
-
-    auto thumbWidth = getSliderThumbRadius(slider);
-
-    valueTrack.startNewSubPath(minPoint);
-    valueTrack.lineTo(isThreeVal ? thumbPoint : maxPoint);
-    g.setColour(slider.findColour(juce::Slider::trackColourId));
-    g.strokePath(valueTrack, {trackWidth, juce::PathStrokeType::curved,
-                              juce::PathStrokeType::rounded});
-
-    if (!isTwoVal) {
-      g.setColour(slider.findColour(juce::Slider::thumbColourId));
-      g.fillEllipse(juce::Rectangle<float>(static_cast<float>(thumbWidth),
-                                           static_cast<float>(thumbWidth))
-                        .withCentre(isThreeVal ? thumbPoint : maxPoint));
-    }
-
-    if (isTwoVal || isThreeVal) {
-      auto sr = juce::jmin(
-          trackWidth,
-          (slider.isHorizontal() ? (float)height : (float)width) * 0.4f);
-      auto pointerColour = slider.findColour(juce::Slider::thumbColourId);
-
-      if (slider.isHorizontal()) {
-        drawPointer(g, minSliderPos - sr,
-                    juce::jmax(0.0f, (float)y + (float)height * 0.5f -
-                                         trackWidth * 2.0f),
-                    trackWidth * 2.0f, pointerColour, 2);
-
-        drawPointer(g, maxSliderPos - trackWidth,
-                    juce::jmin((float)(y + height) - trackWidth * 2.0f,
-                               (float)y + (float)height * 0.5f),
-                    trackWidth * 2.0f, pointerColour, 4);
-      } else {
-        drawPointer(g,
-                    juce::jmax(0.0f, (float)x + (float)width * 0.5f -
-                                         trackWidth * 2.0f),
-                    minSliderPos - trackWidth, trackWidth * 2.0f, pointerColour,
-                    1);
-
-        drawPointer(g,
-                    juce::jmin((float)(x + width) - trackWidth * 2.0f,
-                               (float)x + (float)width * 0.5f),
-                    maxSliderPos - sr, trackWidth * 2.0f, pointerColour, 3);
-      }
-    }
-
-    if (slider.isBar())
-      drawLinearSliderOutline(g, x, y, width, height, style, slider);
+  // The painted reference line (thick, slightly wet looking ink)
+  g.setColour(juce::Colour(15, 15, 15));
+  if (isHorizontal) {
+    g.fillRect(divot.getCentreX() - 1.5f, divot.getY() + 2.0f, 3.0f,
+               divot.getHeight() - 4.0f);
+  } else {
+    g.fillRect(divot.getX() + 2.0f, divot.getCentreY() - 1.5f,
+               divot.getWidth() - 4.0f, 3.0f);
   }
 }
 
-int LookAndFeel::getSliderThumbRadius(juce::Slider &slider) {
-  return juce::jmin(sliderTrackWidth,
-                    slider.isHorizontal()
-                        ? static_cast<int>((float)slider.getHeight() * 0.5f)
-                        : static_cast<int>((float)slider.getWidth() * 0.5f));
-}
+void LookAndFeel::drawGroupComponentOutline(juce::Graphics &g, int w, int h,
+                                            const juce::String &text,
+                                            const juce::Justification &position,
+                                            juce::GroupComponent &group) {
+  auto panelBounds =
+      juce::Rectangle<float>(0.0f, 8.0f, (float)w, (float)h - 8.0f)
+          .reduced(4.0f);
 
-const juce::Colour LookAndFeel::adjustLightness(const juce::Colour &color,
-                                                float factor) {
-  if (color.getLightness() > 0.5f) {
-    return color.withLightness(color.getLightness() / factor);
+  // 1. BOLTED SUB-PANEL WITH PROPER DROP SHADOW
+  drawSoftShadow(g, panelBounds, 2.0f, 6.0f, 0.4f);
+
+  // The chassis material
+  juce::Colour panelColor = chassisColor.brighter(0.08f);
+  g.setColour(panelColor);
+  g.fillRoundedRectangle(panelBounds, 6.0f);
+
+  // True milled edges (1px light top/left, 1px dark bottom/right)
+  g.setColour(juce::Colours::white.withAlpha(0.12f));
+  g.drawLine(panelBounds.getX() + 6.0f, panelBounds.getY(),
+             panelBounds.getRight() - 6.0f, panelBounds.getY(), 1.0f); // Top
+  g.drawLine(panelBounds.getX(), panelBounds.getY() + 6.0f, panelBounds.getX(),
+             panelBounds.getBottom() - 6.0f, 1.0f); // Left
+
+  g.setColour(juce::Colours::black.withAlpha(0.5f));
+  g.drawLine(panelBounds.getX() + 6.0f, panelBounds.getBottom(),
+             panelBounds.getRight() - 6.0f, panelBounds.getBottom(),
+             1.0f); // Bottom
+  g.drawLine(panelBounds.getRight(), panelBounds.getY() + 6.0f,
+             panelBounds.getRight(), panelBounds.getBottom() - 6.0f,
+             1.0f); // Right
+
+  // 2. HARDWARE SCREWS (Slightly randomized rotation for authenticity)
+  float inset = 14.0f;
+  drawScrewHead(g, panelBounds.getX() + inset, panelBounds.getY() + inset,
+                0.45f);
+  drawScrewHead(g, panelBounds.getRight() - inset, panelBounds.getY() + inset,
+                1.12f);
+  drawScrewHead(g, panelBounds.getX() + inset, panelBounds.getBottom() - inset,
+                -0.65f);
+  drawScrewHead(g, panelBounds.getRight() - inset,
+                panelBounds.getBottom() - inset, 0.88f);
+
+  // 3. SILKSCREENED HEADER TEXT WITH INK RELIEF
+  if (text.isNotEmpty()) {
+    g.setFont(getGroupComponentFont());
+    juce::Rectangle<float> textBounds(panelBounds.getX() + 24.0f,
+                                      panelBounds.getY() + 12.0f,
+                                      panelBounds.getWidth() - 48.0f, 20.0f);
+
+    // Subtly raised ink shadow (opposite of an inset shadow)
+    g.setColour(juce::Colours::black.withAlpha(0.5f));
+    g.drawText(text, textBounds.translated(0.0f, 1.0f),
+               juce::Justification::topLeft, false);
+
+    g.setColour(silkScreenWhite);
+    g.drawText(text, textBounds, juce::Justification::topLeft, false);
+
+    // Divider Line (grooved into the metal)
+    float lineY = textBounds.getBottom() + 2.0f;
+    g.setColour(juce::Colours::black.withAlpha(0.4f));
+    g.drawLine(textBounds.getX(), lineY, textBounds.getX() + 120.0f, lineY,
+               1.0f);
+    g.setColour(juce::Colours::white.withAlpha(0.1f));
+    g.drawLine(textBounds.getX(), lineY + 1.0f, textBounds.getX() + 120.0f,
+               lineY + 1.0f, 1.0f);
   }
-
-  if (color.getLightness() < 0.5f) {
-    float newLightness = color.getLightness() * factor;
-    if (newLightness > 1.0f) {
-      newLightness = 1.0f;
-    }
-    return color.withLightness(newLightness);
-  }
-
-  return color;
 }
 
-const juce::Colour LookAndFeel::gray(const juce::Colour &color, float factor) {
-  return color.withSaturationHSL(color.getSaturationHSL() / factor);
+void LookAndFeel::drawScrewHead(juce::Graphics &g, float x, float y,
+                                float rotation) {
+  float radius = 3.8f;
+  juce::Rectangle<float> bounds(x - radius, y - radius, radius * 2.0f,
+                                radius * 2.0f);
+
+  // Drilled hole ambient occlusion (recessed into the panel)
+  g.setColour(juce::Colours::black.withAlpha(0.8f));
+  g.fillEllipse(bounds.expanded(1.0f).translated(0.0f, 1.0f));
+
+  // Stamped steel screw head (Metallic conical simulation)
+  juce::Colour base = juce::Colour(180, 185, 190);
+  juce::ColourGradient screwGrad(base.brighter(0.2f), bounds.getX(),
+                                 bounds.getY(), base.darker(0.5f),
+                                 bounds.getRight(), bounds.getBottom(), false);
+  g.setGradientFill(screwGrad);
+  g.fillEllipse(bounds);
+
+  // The Phillips cross slot
+  juce::Path cross;
+  float slotRadius = radius * 0.65f;
+  cross.addLineSegment(juce::Line<float>(x - slotRadius, y, x + slotRadius, y),
+                       1.4f);
+  cross.addLineSegment(juce::Line<float>(x, y - slotRadius, x, y + slotRadius),
+                       1.4f);
+  cross.applyTransform(juce::AffineTransform::rotation(rotation, x, y));
+
+  // To make the slot look punched, it needs a shadow on the leading edge and a
+  // highlight on the trailing edge. Instead of drawing a flat stroke, we stroke
+  // it twice, offset.
+  g.setColour(juce::Colours::white.withAlpha(0.4f));
+  g.strokePath(cross, juce::PathStrokeType(1.0f),
+               juce::AffineTransform::translation(0.5f, 0.5f));
+
+  g.setColour(juce::Colours::black.withAlpha(0.9f));
+  g.strokePath(cross, juce::PathStrokeType(1.4f));
 }
 
-const juce::Colour LookAndFeel::makeOutline(const juce::Colour &color,
-                                            float factor) {
-  return gray(adjustLightness(color, factor), factor);
+int LookAndFeel::getSliderThumbRadius(juce::Slider &slider) { return 18; }
+
+juce::Font LookAndFeel::getGroupComponentFont() {
+  // Tracking/kerning matters in hardware!
+  return juce::Font{juce::FontOptions{13.0f, juce::Font::bold}}
+      .withExtraKerningFactor(0.05f);
 }

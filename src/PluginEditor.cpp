@@ -22,6 +22,7 @@ JX11AudioProcessorEditor::JX11AudioProcessorEditor(JX11AudioProcessor &p)
   addAndMakeVisible(filterKnobGroup);
   addAndMakeVisible(oscillatorGroup);
   addAndMakeVisible(vibratoGroup);
+  addAndMakeVisible(glideGroup);
 
   polyModeButton.setButtonText("Poly");
   polyModeButton.setClickingTogglesState(true);
@@ -67,6 +68,10 @@ void JX11AudioProcessorEditor::resized() {
   r.setX(r.getX() + 75);
   r.setWidth(300);
   vibratoGroup.setBounds(r);
+
+  r.setX(r.getRight() + 40);
+  r.setHeight(300);
+  glideGroup.setBounds(r);
 
   r.setX(r.getRight() + 20);
   r.setWidth(100);

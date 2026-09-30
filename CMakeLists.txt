@@ -40,6 +40,8 @@ target_sources(JX11 PRIVATE
     src/EnvelopeGroup.h
     src/FilterKnobGroup.cpp
     src/FilterKnobGroup.h
+    src/GlideGroup.cpp
+    src/GlideGroup.h
     src/LookAndFeel.cpp
     src/LookAndFeel.h
     src/NoiseGenerator.h

@@ -17,6 +17,7 @@
 
 #include "EnvelopeGroup.h"
 #include "FilterKnobGroup.h"
+#include "GlideGroup.h"
 #include "LookAndFeel.h"
 #include "OscillatorGroup.h"
 #include "PluginProcessor.h"
@@ -46,6 +47,7 @@ private:
   using APVTS = juce::AudioProcessorValueTreeState;
   using SliderAttachment = APVTS::SliderAttachment;
   using ButtonAttachment = APVTS::ButtonAttachment;
+  using ComboBoxAttachment = APVTS::ComboBoxAttachment;
 
   // attachments must be declared after the ui they are attached to
   // why? becuase JUCE's garbage collector destroys objects in the class from
@@ -159,6 +161,22 @@ private:
                                      lfoRateKnob.slider};
 
   VibratoGroup vibratoGroup{"Vibrato", lfoRateKnob, vibratoKnob};
+
+  juce::ComboBox glideModeBox;
+  ComboBoxAttachment glideModeAttachment{
+      audioProcessor.apvts, ParameterID::glideMode.getParamID(), glideModeBox};
+
+  RotaryKnob glideRateKnob;
+  SliderAttachment glideRateAttachment{audioProcessor.apvts,
+                                       ParameterID::glideRate.getParamID(),
+                                       glideRateKnob.slider};
+
+  RotaryKnob glideBendKnob;
+  SliderAttachment glideBendAttachment{audioProcessor.apvts,
+                                       ParameterID::glideBend.getParamID(),
+                                       glideBendKnob.slider};
+
+  GlideGroup glideGroup{"Glide", glideModeBox, glideRateKnob, glideBendKnob};
 
   juce::TextButton polyModeButton;
   ButtonAttachment polyModeAttachment{
